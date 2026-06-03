@@ -17,5 +17,5 @@ SELECT
     MONTOPAGADO AS monto_pagado,
     TRIM(UPPER(STATUS_TERCERO)) AS status_tercero,
     TRIM(UPPER(NOMBRETERCERO)) AS nombre_tercero,
-    FECHA_CAPTURA AS fecha_captura
+    CAST(FECHA_CAPTURA AS DATE) AS fecha_captura
 FROM {{ source('raw', 'rp_flujo_ingresos') }}
