@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: mart_comercial_ventas
+    description: Mart comercial con una fila por venta, enriquecido con unidad y cliente principal.
+    columns:
+      - name: venta_key
+        tests:
+          - unique
+          - not_null
+
+      - name: id_venta
+        tests:
+          - unique
+          - not_null
+
+      - name: precio_venta
+        tests:
+          - not_null
+
+  - name: mart_cobranza_por_venta
+    description: Mart de cobranza con venta, total ingresado y saldo estimado.
+    columns:
+      - name: venta_key
+        tests:
+          - unique
+          - not_null
+
+      - name: id_venta
+        tests:
+          - unique
+          - not_null
+
+      - name: total_ingresado
+        tests:
+          - not_null
+
+      - name: saldo_estimado
+        tests:
+          - not_null
+
+  - name: mart_facturacion
+    columns:
+      - name: factura_key
+        tests:
+          - unique
+          - not_null
+
+      - name: uuid
+        tests:
+          - unique
+          - not_null
+
+      - name: total_factura
+        tests:
+          - not_null

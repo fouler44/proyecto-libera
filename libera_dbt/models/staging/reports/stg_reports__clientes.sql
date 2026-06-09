@@ -16,8 +16,14 @@ renamed AS (
         TRIM(ETAPA) AS etapa,
         TRIM(UPPER(ASESOR)) AS asesor,
         TRIM(STATUSVENTA) AS status_venta,
-        CAST(FECHACONTRATO AS DATE) AS fecha_contrato,
-        CAST(FECHAFIRMACONTRATO AS DATE) AS fecha_firma_contrato,
+        TRY_CAST(
+            NULLIF(NULLIF(TRIM(CAST(FECHACONTRATO AS STRING)), 'NULL'), '')
+            AS DATE
+        ) AS fecha_contrato,
+        TRY_CAST(
+            NULLIF(NULLIF(TRIM(FECHAFIRMACONTRATO), 'NULL'), '')
+            AS DATE
+        ) AS fecha_firma_contrato,
         CASE
             WHEN TRIM(PLAN) LIKE '%CONTADO%' THEN 'CONTADO'
             WHEN TRIM(PLAN) LIKE '48 MEESES%' THEN '48 MESES'
@@ -28,7 +34,10 @@ renamed AS (
         ENGANCHE AS enganche,
         FINANCIAMIENTO AS financiamiento,
         STATUSESCRITURA AS status_escritura,
-        CAST(FECHAESCRITURA AS DATE) AS fecha_escritura,
+        TRY_CAST(
+            NULLIF(NULLIF(TRIM(FECHAESCRITURA), 'NULL'), '')
+            AS DATE
+        ) AS fecha_escritura,
         VALORESCRITURA AS valor_escritura,
         DIAPAGO AS dia_pago,
         TRIM(UPPER(NOMBRECLIENTE)) AS nombre_cliente,
