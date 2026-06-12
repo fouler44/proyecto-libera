@@ -150,6 +150,14 @@ En esta capa se construyen:
 - **tabla puente**, para resolver relaciones muchos-a-muchos;
 - **modelos intermedios**, que preparan información antes de construir hechos y dimensiones.
 
+### Modelo dimensional de fase 1
+
+El siguiente diagrama muestra cómo se relacionan las principales entidades analíticas del warehouse en esta primera fase:
+
+![Modelo dimensional fase 1](docs/dimensional_model.png)
+
+Este modelo incluye ventas, unidades, personas, ingresos, facturas y fechas. También muestra decisiones importantes como el uso de `bridge_venta_persona` para evitar duplicar ventas por copropietarios, y la independencia de `fct_facturas` respecto a ventas por falta de una llave confiable.
+
 ### Estructura del warehouse
 
 ```text
