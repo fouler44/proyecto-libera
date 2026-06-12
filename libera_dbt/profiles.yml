@@ -1,0 +1,12 @@
+pipeline_libera_dbt:
+  target: ci
+  outputs:
+    ci:
+      type: databricks
+      catalog: analyticsgl
+      schema: ci
+      host: "{{ env_var('DATABRICKS_HOST') }}"
+      http_path: "{{ env_var('DATABRICKS_HTTP_PATH') }}"
+      token: "{{ env_var('DBT_DATABRICKS_TOKEN') }}"
+      auth_type: token
+      threads: 16
