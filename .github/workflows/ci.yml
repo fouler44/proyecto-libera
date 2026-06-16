@@ -31,10 +31,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install dbt-databricks
 
-            - name: Create dbt profiles.yml
+      - name: Create dbt profiles.yml
         run: |
           mkdir -p ~/.dbt
-          cat > ~/.dbt/profiles.yml <<EOF
+          cat > ~/.dbt/profiles.yml <<'EOF'
           pipeline_libera_dbt:
             target: ci
             outputs:
@@ -44,7 +44,7 @@ jobs:
                 schema: ci
                 host: "{{ env_var('DATABRICKS_HOST') }}"
                 http_path: "{{ env_var('DATABRICKS_HTTP_PATH') }}"
-                token: "{{ env_var('DBT_ENV_SECRET_DATABRICKS_TOKEN') }}"
+                token: "{{ env_var('DBT_DATABRICKS_TOKEN') }}"
                 auth_type: token
                 threads: 16
           EOF
@@ -53,7 +53,7 @@ jobs:
         run: dbt deps
 
       - name: Check dbt connection
-        run: dbt debug --profiles-dir . --target ci
+        run: dbt debug --target ci
 
-      - name: Deploy and Test Models (CI)
-        run: dbt build --profiles-dir . --target ci
+      - name: Deploy and Test Models CI
+        run: dbt build --target ci
