@@ -1,0 +1,133 @@
+{"data":{"log_version":3,"version":"=2.0.0-preview.176"},"info":{"category":"","code":"A001","extra":{},"invocation_id":"019e425c-f818-7be0-bf28-423006473701","level":"info","msg":"Running with dbt-fusion=2.0.0-preview.176","name":"MainReportVersion","pid":3164,"thread":"tokio-rt-worker","ts":"2026-05-19T22:30:49.627448Z"}}
+{"data":{"args":{"debug":"false","invocation_command":"C:\\Users\\angel\\.local\\bin\\dbt.exe license info --json --log-format json","log_format":"json","quiet":"false","write_json":"true"}},"info":{"category":"","code":"A002","extra":{},"invocation_id":"019e425c-f818-7be0-bf28-423006473701","level":"debug","msg":"running dbt-fusion with arguments {\"command\":\"license\",\"vars\":\"{}\",\"limit\":\"10\",\"debug\":false,\"log_format\":\"json\",\"quiet\":false,\"write_json\":true,\"write_catalog\":false}","name":"MainReportArgs","pid":3164,"thread":"tokio-rt-worker","ts":"2026-05-19T22:30:49.627467Z"}}
+{"data":{},"info":{"category":"","code":"","extra":{},"invocation_id":"019e425c-f818-7be0-bf28-423006473701","level":"debug","msg":"No active cloud project configured, skipping remote license","name":"Generic","pid":3164,"thread":"tokio-rt-worker","ts":"2026-05-19T22:30:49.632254Z"}}
+{"data":{"columns":[],"is_inline":true,"node_name":"license_info","output_format":"json","preview":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","unique_id":"license.info"},"info":{"category":"","code":"Q041","extra":{},"invocation_id":"019e425c-f818-7be0-bf28-423006473701","level":"info","msg":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","name":"ShowNode","pid":3164,"thread":"tokio-rt-worker","ts":"2026-05-19T22:30:49.632663Z"}}
+{"data":{"completed_at":"2026-05-19T22:30:49.971751Z","elapsed":0.34450429677963257,"success":true},"info":{"category":"","code":"Q039","extra":{},"invocation_id":"019e425c-f818-7be0-bf28-423006473701","level":"info","msg":"\n==================== Execution Summary =====================\nFinished 'license' successfully [344ms]","name":"CommandCompleted","pid":3164,"thread":"tokio-rt-worker","ts":"2026-05-19T22:30:49.971866Z"}}
+==================== 2026-05-19T22:36:05.208637Z | 019e4261-c8d6-79f3-8c19-18adfa408114 ====================
+22:36:05.208802 [info ]: Installing dbt project and profile setup
+22:36:05.240105 [info ]: Info Created .vscode/extensions.json with dbt extension recommendation
+22:36:05.240536 [info ]: Success Project created successfully!
+22:36:05.240759 [info ]: Info Project name: jaffle_shop
+22:36:05.240914 [info ]: Info Project directory: jaffle_shop
+22:36:05.241067 [info ]: Info Setting up your profile...
+22:36:05.241374 [info ]: Info Creating new profile...
+22:36:11.188436 [info ]: No dbt_cloud.yml found - proceeding without cloud pre-population
+22:46:08.563798 [info ]: Success Profile written to C:\Users\angel\.dbt\profiles.yml
+22:46:08.564052 [info ]: Validating profile inputs, adapters, and connection
+
+22:46:08.564188 [info ]: dbt-fusion 2.0.0-preview.176
+22:46:08.564726 [info ]: Started loading project
+22:46:08.568337 [info ]: Loading ~/.dbt/profiles.yml
+22:46:08.581974 [info ]: Finished loading project [  0.02s]
+22:46:08.582181 [info ]: Started debugging
+22:46:08.582317 [info ]: Debugging profile: dev
+22:46:08.582442 [info ]: Debugging dbt version: 2.0.0-preview.176
+22:46:08.582543 [info ]: Debugging platform: windows x86_64 (windows)
+22:46:08.582691 [info ]: Debugging adapter type: databricks (remote)
+22:46:08.613731 [info ]: Debugging dependencies:
+  git: OK
+22:46:08.614063 [info ]: Debugging connection:
+  "schema": "default",
+  "host": "dbc-d49b4734-0722.cloud.databricks.com",
+  "http_path": "/sql/1.0/warehouses/7f1065924412ca1c"
+22:46:19.696880 [info ]: Finished debugging [ 11.11s]
+22:46:19.697121 [error]: dbt1011: dbt was unable to connect to the specified database.
+The following error was returned:
+
+failed to ping database: databricks: request error: error connecting: host=dbc-d49b4734-0722.cloud.databricks.com port=443, httpPath=/sql/1.0/warehouses/7f1065924412ca1c: databricks: request error: open session request error: Post "https://dbc-d49b4734-0722.cloud.databricks.com:443/sql/1.0/warehouses/7f1065924412ca1c": Credential was not sent or was of an unsupported type for this API.: request error after 1 attempt(s): unexpected HTTP status 401 Unauthorized
+
+Check your database credentials and try again. For more information, visit:
+https://docs.getdbt.com/docs/core/connect-data-platform/connection-profiles
+22:46:20.246451 [info ]: 
+==================== Execution Summary =====================
+Finished 'init' with 1 error for target 'dev' [10m 15s]
+==================== 2026-05-19T22:51:45.213764Z | 019e4270-20bb-7da0-b9e6-138484f13494 ====================
+22:51:45.213879 [info ]: Installing dbt project and profile setup
+22:51:45.216108 [info ]: Warning Directory 'jaffle_shop' already exists, using 'jaffle_shop_1' instead
+22:51:45.238238 [info ]: Info Created .vscode/extensions.json with dbt extension recommendation
+22:51:45.238773 [info ]: Success Project created successfully!
+22:51:45.238951 [info ]: Info Project name: jaffle_shop_1
+22:51:45.239079 [info ]: Info Project directory: jaffle_shop_1
+22:51:45.239186 [info ]: Info Setting up your profile...
+22:51:45.239548 [info ]: Loading ~/.dbt/profiles.yml
+22:51:45.239944 [info ]: Info Creating new profile...
+22:51:48.542237 [info ]: No dbt_cloud.yml found - proceeding without cloud pre-population
+22:57:07.847650 [info ]: Success Profile written to C:\Users\angel\.dbt\profiles.yml
+22:57:07.847994 [info ]: Validating profile inputs, adapters, and connection
+
+22:57:07.848179 [info ]: dbt-fusion 2.0.0-preview.176
+22:57:07.848741 [info ]: Started loading project
+22:57:07.850584 [info ]: Loading ~/.dbt/profiles.yml
+22:57:07.888654 [info ]: Finished loading project [  0.04s]
+22:57:07.888787 [info ]: Started debugging
+22:57:07.888885 [info ]: Debugging profile: dev
+22:57:07.889030 [info ]: Debugging dbt version: 2.0.0-preview.176
+22:57:07.889125 [info ]: Debugging platform: windows x86_64 (windows)
+22:57:07.889250 [info ]: Debugging adapter type: databricks (remote)
+22:57:07.931890 [info ]: Debugging dependencies:
+  git: OK
+22:57:07.932093 [info ]: Debugging connection:
+  "schema": "dev",
+  "host": "dbc-d49b4734-0722.cloud.databricks.com",
+  "http_path": "/sql/1.0/warehouses/7f1065924412ca1c"
+22:57:20.481104 [info ]: Finished debugging [ 12.59s]
+22:57:20.481364 [error]: dbt1011: dbt was unable to connect to the specified database.
+The following error was returned:
+
+failed to ping database: databricks: request error: error connecting: host=dbc-d49b4734-0722.cloud.databricks.com port=443, httpPath=/sql/1.0/warehouses/7f1065924412ca1c: databricks: request error: open session request error: Post "https://dbc-d49b4734-0722.cloud.databricks.com:443/sql/1.0/warehouses/7f1065924412ca1c": request error after 1 attempt(s): Post "https://dbc-d49b4734-0722.cloud.databricks.com:443/sql/1.0/warehouses/7f1065924412ca1c": unable to get token source: interrupted while waiting for auth callback
+
+Check your database credentials and try again. For more information, visit:
+https://docs.getdbt.com/docs/core/connect-data-platform/connection-profiles
+22:57:21.175258 [info ]: 
+==================== Execution Summary =====================
+Finished 'init' with 1 error for target 'dev' [5m 36s]
+==================== 2026-05-19T22:57:24.762062Z | 019e4275-4f18-7bc3-a6ae-31cc6697e3f5 ====================
+22:57:24.762175 [info ]: Installing dbt project and profile setup
+22:57:24.764476 [info ]: Warning Directory 'jaffle_shop' already exists, using 'jaffle_shop_2' instead
+22:57:24.788110 [info ]: Info Created .vscode/extensions.json with dbt extension recommendation
+22:57:24.788414 [info ]: Success Project created successfully!
+22:57:24.788580 [info ]: Info Project name: jaffle_shop_2
+22:57:24.788717 [info ]: Info Project directory: jaffle_shop_2
+22:57:24.788850 [info ]: Info Setting up your profile...
+22:57:24.789668 [info ]: Loading ~/.dbt/profiles.yml
+22:57:24.790260 [info ]: Info Creating new profile...
+{"data":{"log_version":3,"version":"=2.0.0-preview.176"},"info":{"category":"","code":"A001","extra":{},"invocation_id":"019e429f-6a07-7cf0-8dcd-c3a53db5ca06","level":"info","msg":"Running with dbt-fusion=2.0.0-preview.176","name":"MainReportVersion","pid":10560,"thread":"tokio-rt-worker","ts":"2026-05-19T23:43:24.170082Z"}}
+{"data":{"args":{"debug":"false","invocation_command":"C:\\Users\\angel\\.local\\bin\\dbt.exe license info --json --log-format json","log_format":"json","quiet":"false","write_json":"true"}},"info":{"category":"","code":"A002","extra":{},"invocation_id":"019e429f-6a07-7cf0-8dcd-c3a53db5ca06","level":"debug","msg":"running dbt-fusion with arguments {\"command\":\"license\",\"vars\":\"{}\",\"limit\":\"10\",\"debug\":false,\"log_format\":\"json\",\"quiet\":false,\"write_json\":true,\"write_catalog\":false}","name":"MainReportArgs","pid":10560,"thread":"tokio-rt-worker","ts":"2026-05-19T23:43:24.170113Z"}}
+{"data":{},"info":{"category":"","code":"","extra":{},"invocation_id":"019e429f-6a07-7cf0-8dcd-c3a53db5ca06","level":"debug","msg":"No active cloud project configured, skipping remote license","name":"Generic","pid":10560,"thread":"tokio-rt-worker","ts":"2026-05-19T23:43:24.174764Z"}}
+{"data":{"columns":[],"is_inline":true,"node_name":"license_info","output_format":"json","preview":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","unique_id":"license.info"},"info":{"category":"","code":"Q041","extra":{},"invocation_id":"019e429f-6a07-7cf0-8dcd-c3a53db5ca06","level":"info","msg":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","name":"ShowNode","pid":10560,"thread":"tokio-rt-worker","ts":"2026-05-19T23:43:24.175238Z"}}
+{"data":{"completed_at":"2026-05-19T23:43:24.615214Z","elapsed":0.4452885091304779,"success":true},"info":{"category":"","code":"Q039","extra":{},"invocation_id":"019e429f-6a07-7cf0-8dcd-c3a53db5ca06","level":"info","msg":"\n==================== Execution Summary =====================\nFinished 'license' successfully [445ms]","name":"CommandCompleted","pid":10560,"thread":"tokio-rt-worker","ts":"2026-05-19T23:43:24.615461Z"}}
+{"data":{"log_version":3,"version":"=2.0.0-preview.176"},"info":{"category":"","code":"A001","extra":{},"invocation_id":"019e6b8d-1213-7903-80f7-2489311165a4","level":"info","msg":"Running with dbt-fusion=2.0.0-preview.176","name":"MainReportVersion","pid":18588,"thread":"tokio-rt-worker","ts":"2026-05-27T22:27:47.943625Z"}}
+{"data":{"args":{"debug":"false","invocation_command":"C:\\Users\\angel\\.local\\bin\\dbt.exe license info --json --log-format json","log_format":"json","quiet":"false","write_json":"true"}},"info":{"category":"","code":"A002","extra":{},"invocation_id":"019e6b8d-1213-7903-80f7-2489311165a4","level":"debug","msg":"running dbt-fusion with arguments {\"command\":\"license\",\"vars\":\"{}\",\"limit\":\"10\",\"debug\":false,\"log_format\":\"json\",\"quiet\":false,\"write_json\":true,\"write_catalog\":false}","name":"MainReportArgs","pid":18588,"thread":"tokio-rt-worker","ts":"2026-05-27T22:27:47.943721Z"}}
+{"data":{},"info":{"category":"","code":"","extra":{},"invocation_id":"019e6b8d-1213-7903-80f7-2489311165a4","level":"debug","msg":"No active cloud project configured, skipping remote license","name":"Generic","pid":18588,"thread":"tokio-rt-worker","ts":"2026-05-27T22:27:47.950676Z"}}
+{"data":{"columns":[],"is_inline":true,"node_name":"license_info","output_format":"json","preview":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","unique_id":"license.info"},"info":{"category":"","code":"Q041","extra":{},"invocation_id":"019e6b8d-1213-7903-80f7-2489311165a4","level":"info","msg":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","name":"ShowNode","pid":18588,"thread":"tokio-rt-worker","ts":"2026-05-27T22:27:47.952000Z"}}
+{"data":{"completed_at":"2026-05-27T22:27:48.332273Z","elapsed":0.3902199864387512,"success":true},"info":{"category":"","code":"Q039","extra":{},"invocation_id":"019e6b8d-1213-7903-80f7-2489311165a4","level":"info","msg":"\n==================== Execution Summary =====================\nFinished 'license' successfully [390ms]","name":"CommandCompleted","pid":18588,"thread":"tokio-rt-worker","ts":"2026-05-27T22:27:48.333792Z"}}
+{"data":{"log_version":3,"version":"=2.0.0-preview.176"},"info":{"category":"","code":"A001","extra":{},"invocation_id":"019e80e7-7f58-7ee3-9362-01fc32cf2f7f","level":"info","msg":"Running with dbt-fusion=2.0.0-preview.176","name":"MainReportVersion","pid":17476,"thread":"tokio-rt-worker","ts":"2026-06-01T01:58:35.614007Z"}}
+{"data":{"args":{"debug":"false","invocation_command":"C:\\Users\\angel\\.local\\bin\\dbt.exe license info --json --log-format json","log_format":"json","quiet":"false","write_json":"true"}},"info":{"category":"","code":"A002","extra":{},"invocation_id":"019e80e7-7f58-7ee3-9362-01fc32cf2f7f","level":"debug","msg":"running dbt-fusion with arguments {\"command\":\"license\",\"vars\":\"{}\",\"limit\":\"10\",\"debug\":false,\"log_format\":\"json\",\"quiet\":false,\"write_json\":true,\"write_catalog\":false}","name":"MainReportArgs","pid":17476,"thread":"tokio-rt-worker","ts":"2026-06-01T01:58:35.614025Z"}}
+{"data":{},"info":{"category":"","code":"","extra":{},"invocation_id":"019e80e7-7f58-7ee3-9362-01fc32cf2f7f","level":"debug","msg":"No active cloud project configured, skipping remote license","name":"Generic","pid":17476,"thread":"tokio-rt-worker","ts":"2026-06-01T01:58:35.618878Z"}}
+{"data":{"columns":[],"is_inline":true,"node_name":"license_info","output_format":"json","preview":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","unique_id":"license.info"},"info":{"category":"","code":"Q041","extra":{},"invocation_id":"019e80e7-7f58-7ee3-9362-01fc32cf2f7f","level":"info","msg":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","name":"ShowNode","pid":17476,"thread":"tokio-rt-worker","ts":"2026-06-01T01:58:35.620189Z"}}
+{"data":{"completed_at":"2026-06-01T01:58:36.045001Z","elapsed":0.4317030906677246,"success":true},"info":{"category":"","code":"Q039","extra":{},"invocation_id":"019e80e7-7f58-7ee3-9362-01fc32cf2f7f","level":"info","msg":"\n==================== Execution Summary =====================\nFinished 'license' successfully [431ms]","name":"CommandCompleted","pid":17476,"thread":"tokio-rt-worker","ts":"2026-06-01T01:58:36.045177Z"}}
+{"data":{"log_version":3,"version":"=2.0.0-preview.176"},"info":{"category":"","code":"A001","extra":{},"invocation_id":"019e85c0-a015-7cd3-8083-4bf3d05d336b","level":"info","msg":"Running with dbt-fusion=2.0.0-preview.176","name":"MainReportVersion","pid":20836,"thread":"tokio-rt-worker","ts":"2026-06-02T00:34:14.189745Z"}}
+{"data":{"args":{"debug":"false","invocation_command":"C:\\Users\\angel\\.local\\bin\\dbt.exe license info --json --log-format json","log_format":"json","quiet":"false","write_json":"true"}},"info":{"category":"","code":"A002","extra":{},"invocation_id":"019e85c0-a015-7cd3-8083-4bf3d05d336b","level":"debug","msg":"running dbt-fusion with arguments {\"command\":\"license\",\"vars\":\"{}\",\"limit\":\"10\",\"debug\":false,\"log_format\":\"json\",\"quiet\":false,\"write_json\":true,\"write_catalog\":false}","name":"MainReportArgs","pid":20836,"thread":"tokio-rt-worker","ts":"2026-06-02T00:34:14.189977Z"}}
+{"data":{},"info":{"category":"","code":"","extra":{},"invocation_id":"019e85c0-a015-7cd3-8083-4bf3d05d336b","level":"debug","msg":"No active cloud project configured, skipping remote license","name":"Generic","pid":20836,"thread":"tokio-rt-worker","ts":"2026-06-02T00:34:14.197296Z"}}
+{"data":{"columns":[],"is_inline":true,"node_name":"license_info","output_format":"json","preview":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","unique_id":"license.info"},"info":{"category":"","code":"Q041","extra":{},"invocation_id":"019e85c0-a015-7cd3-8083-4bf3d05d336b","level":"info","msg":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","name":"ShowNode","pid":20836,"thread":"tokio-rt-worker","ts":"2026-06-02T00:34:14.198379Z"}}
+{"data":{"completed_at":"2026-06-02T00:34:15.129443Z","elapsed":0.9420669078826904,"success":true},"info":{"category":"","code":"Q039","extra":{},"invocation_id":"019e85c0-a015-7cd3-8083-4bf3d05d336b","level":"info","msg":"\n==================== Execution Summary =====================\nFinished 'license' successfully [942ms]","name":"CommandCompleted","pid":20836,"thread":"tokio-rt-worker","ts":"2026-06-02T00:34:15.147976Z"}}
+{"data":{"log_version":3,"version":"=2.0.0-preview.176"},"info":{"category":"","code":"A001","extra":{},"invocation_id":"019e85c3-49a2-7423-9fc8-f22a1bf79647","level":"info","msg":"Running with dbt-fusion=2.0.0-preview.176","name":"MainReportVersion","pid":30544,"thread":"tokio-rt-worker","ts":"2026-06-02T00:37:08.650302Z"}}
+{"data":{"args":{"debug":"false","invocation_command":"C:\\Users\\angel\\.local\\bin\\dbt.exe license info --json --log-format json","log_format":"json","quiet":"false","write_json":"true"}},"info":{"category":"","code":"A002","extra":{},"invocation_id":"019e85c3-49a2-7423-9fc8-f22a1bf79647","level":"debug","msg":"running dbt-fusion with arguments {\"command\":\"license\",\"vars\":\"{}\",\"limit\":\"10\",\"debug\":false,\"log_format\":\"json\",\"quiet\":false,\"write_json\":true,\"write_catalog\":false}","name":"MainReportArgs","pid":30544,"thread":"tokio-rt-worker","ts":"2026-06-02T00:37:08.650378Z"}}
+{"data":{},"info":{"category":"","code":"","extra":{},"invocation_id":"019e85c3-49a2-7423-9fc8-f22a1bf79647","level":"debug","msg":"No active cloud project configured, skipping remote license","name":"Generic","pid":30544,"thread":"tokio-rt-worker","ts":"2026-06-02T00:37:08.703510Z"}}
+{"data":{"columns":[],"is_inline":true,"node_name":"license_info","output_format":"json","preview":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","unique_id":"license.info"},"info":{"category":"","code":"Q041","extra":{},"invocation_id":"019e85c3-49a2-7423-9fc8-f22a1bf79647","level":"info","msg":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","name":"ShowNode","pid":30544,"thread":"tokio-rt-worker","ts":"2026-06-02T00:37:08.703994Z"}}
+{"data":{"completed_at":"2026-06-02T00:37:08.950772Z","elapsed":0.3006906807422638,"success":true},"info":{"category":"","code":"Q039","extra":{},"invocation_id":"019e85c3-49a2-7423-9fc8-f22a1bf79647","level":"info","msg":"\n==================== Execution Summary =====================\nFinished 'license' successfully [300ms]","name":"CommandCompleted","pid":30544,"thread":"tokio-rt-worker","ts":"2026-06-02T00:37:08.950892Z"}}
+{"data":{"log_version":3,"version":"=2.0.0-preview.176"},"info":{"category":"","code":"A001","extra":{},"invocation_id":"019e85c3-da5e-7b93-8820-6032e6ff5d55","level":"info","msg":"Running with dbt-fusion=2.0.0-preview.176","name":"MainReportVersion","pid":10656,"thread":"tokio-rt-worker","ts":"2026-06-02T00:37:45.697495Z"}}
+{"data":{"args":{"debug":"false","invocation_command":"C:\\Users\\angel\\.local\\bin\\dbt.exe license info --json --log-format json","log_format":"json","quiet":"false","write_json":"true"}},"info":{"category":"","code":"A002","extra":{},"invocation_id":"019e85c3-da5e-7b93-8820-6032e6ff5d55","level":"debug","msg":"running dbt-fusion with arguments {\"command\":\"license\",\"vars\":\"{}\",\"limit\":\"10\",\"debug\":false,\"log_format\":\"json\",\"quiet\":false,\"write_json\":true,\"write_catalog\":false}","name":"MainReportArgs","pid":10656,"thread":"tokio-rt-worker","ts":"2026-06-02T00:37:45.697524Z"}}
+{"data":{},"info":{"category":"","code":"","extra":{},"invocation_id":"019e85c3-da5e-7b93-8820-6032e6ff5d55","level":"debug","msg":"No active cloud project configured, skipping remote license","name":"Generic","pid":10656,"thread":"tokio-rt-worker","ts":"2026-06-02T00:37:45.704830Z"}}
+{"data":{"columns":[],"is_inline":true,"node_name":"license_info","output_format":"json","preview":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","unique_id":"license.info"},"info":{"category":"","code":"Q041","extra":{},"invocation_id":"019e85c3-da5e-7b93-8820-6032e6ff5d55","level":"info","msg":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","name":"ShowNode","pid":10656,"thread":"tokio-rt-worker","ts":"2026-06-02T00:37:45.705762Z"}}
+{"data":{"completed_at":"2026-06-02T00:37:45.965486Z","elapsed":0.26816830039024353,"success":true},"info":{"category":"","code":"Q039","extra":{},"invocation_id":"019e85c3-da5e-7b93-8820-6032e6ff5d55","level":"info","msg":"\n==================== Execution Summary =====================\nFinished 'license' successfully [268ms]","name":"CommandCompleted","pid":10656,"thread":"tokio-rt-worker","ts":"2026-06-02T00:37:45.965603Z"}}
+{"data":{"log_version":3,"version":"=2.0.0-preview.176"},"info":{"category":"","code":"A001","extra":{},"invocation_id":"019e85c7-3b77-7f03-9cea-997e4158eb3f","level":"info","msg":"Running with dbt-fusion=2.0.0-preview.176","name":"MainReportVersion","pid":17732,"thread":"tokio-rt-worker","ts":"2026-06-02T00:41:27.161872Z"}}
+{"data":{"args":{"debug":"false","invocation_command":"C:\\Users\\angel\\.local\\bin\\dbt.exe license info --json --log-format json","log_format":"json","quiet":"false","write_json":"true"}},"info":{"category":"","code":"A002","extra":{},"invocation_id":"019e85c7-3b77-7f03-9cea-997e4158eb3f","level":"debug","msg":"running dbt-fusion with arguments {\"command\":\"license\",\"vars\":\"{}\",\"limit\":\"10\",\"debug\":false,\"log_format\":\"json\",\"quiet\":false,\"write_json\":true,\"write_catalog\":false}","name":"MainReportArgs","pid":17732,"thread":"tokio-rt-worker","ts":"2026-06-02T00:41:27.161902Z"}}
+{"data":{},"info":{"category":"","code":"","extra":{},"invocation_id":"019e85c7-3b77-7f03-9cea-997e4158eb3f","level":"debug","msg":"No active cloud project configured, skipping remote license","name":"Generic","pid":17732,"thread":"tokio-rt-worker","ts":"2026-06-02T00:41:27.166736Z"}}
+{"data":{"columns":[],"is_inline":true,"node_name":"license_info","output_format":"json","preview":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","unique_id":"license.info"},"info":{"category":"","code":"Q041","extra":{},"invocation_id":"019e85c7-3b77-7f03-9cea-997e4158eb3f","level":"info","msg":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","name":"ShowNode","pid":17732,"thread":"tokio-rt-worker","ts":"2026-06-02T00:41:27.167181Z"}}
+{"data":{"completed_at":"2026-06-02T00:41:27.403673Z","elapsed":0.24194130301475525,"success":true},"info":{"category":"","code":"Q039","extra":{},"invocation_id":"019e85c7-3b77-7f03-9cea-997e4158eb3f","level":"info","msg":"\n==================== Execution Summary =====================\nFinished 'license' successfully [241ms]","name":"CommandCompleted","pid":17732,"thread":"tokio-rt-worker","ts":"2026-06-02T00:41:27.403782Z"}}
+{"data":{"log_version":3,"version":"=2.0.0-preview.177"},"info":{"category":"","code":"A001","extra":{},"invocation_id":"019e8916-0a90-71a2-8228-6d7ff56b0c3b","level":"info","msg":"Running with dbt-fusion=2.0.0-preview.177","name":"MainReportVersion","pid":14636,"thread":"tokio-rt-worker","ts":"2026-06-02T16:06:23.668378Z"}}
+{"data":{"args":{"debug":"false","invocation_command":"C:\\Users\\angel\\.local\\bin\\dbt.exe license info --json --log-format json","log_format":"json","quiet":"false","write_json":"true"}},"info":{"category":"","code":"A002","extra":{},"invocation_id":"019e8916-0a90-71a2-8228-6d7ff56b0c3b","level":"debug","msg":"running dbt-fusion with arguments {\"command\":\"license\",\"vars\":\"{}\",\"limit\":\"10\",\"debug\":false,\"log_format\":\"json\",\"quiet\":false,\"write_json\":true,\"write_catalog\":false}","name":"MainReportArgs","pid":14636,"thread":"tokio-rt-worker","ts":"2026-06-02T16:06:23.668453Z"}}
+{"data":{},"info":{"category":"","code":"","extra":{},"invocation_id":"019e8916-0a90-71a2-8228-6d7ff56b0c3b","level":"debug","msg":"No active cloud project configured, skipping remote license","name":"Generic","pid":14636,"thread":"tokio-rt-worker","ts":"2026-06-02T16:06:23.678052Z"}}
+{"data":{"columns":[],"is_inline":true,"node_name":"license_info","output_format":"json","preview":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","unique_id":"license.info"},"info":{"category":"","code":"Q041","extra":{},"invocation_id":"019e8916-0a90-71a2-8228-6d7ff56b0c3b","level":"info","msg":"{\n  \"status\": \"not_found\",\n  \"licensing_enabled\": true\n}","name":"ShowNode","pid":14636,"thread":"tokio-rt-worker","ts":"2026-06-02T16:06:23.679534Z"}}
+{"data":{"completed_at":"2026-06-02T16:06:24.224553Z","elapsed":0.5601804256439209,"success":true},"info":{"category":"","code":"Q039","extra":{},"invocation_id":"019e8916-0a90-71a2-8228-6d7ff56b0c3b","level":"info","msg":"\n==================== Execution Summary =====================\nFinished 'license' successfully [560ms]","name":"CommandCompleted","pid":14636,"thread":"tokio-rt-worker","ts":"2026-06-02T16:06:24.226023Z"}}

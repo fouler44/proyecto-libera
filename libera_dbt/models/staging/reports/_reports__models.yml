@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: stg_reports__vista_ventas
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - desarrollo_largo
+              - unidad
+    columns:
+      - name: id_venta
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_reports__clientes
+    columns:
+      - name: id_venta
+        data_tests:
+          - not_null
+
+  - name: stg_reports__copropiedades
+    columns:
+      - name: id_venta
+        data_tests:
+          - not_null
+  
+  - name: stg_reports__flujo_ingresos
+    columns:
+      - name: monto_pagado
+        data_tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+  - name: stg_reports__facturas
+    columns:
+      - name: uuid
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_reports__cliente_canceladas
+    config:
+      tags: ['phase_2', 'canceladas']
+
+  - name: stg_reports__copropiedades_canceladas
+    config:
+      tags: ['phase_2', 'canceladas']
+
+  - name: stg_reports__flujo_ingresos_ventacancelada
+    config:
+      tags: ['phase_2', 'canceladas']

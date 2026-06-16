@@ -1,0 +1,118 @@
+version: 2
+
+models:
+  - name: dim_unidades
+    description: "Dimensión de unidades vendidas u observadas en la vista de ventas. Grano: una fila por desarrollo y unidad."
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - desarrollo_largo
+              - unidad
+
+    columns:
+      - name: unidad_key
+        data_tests:
+          - not_null
+          - unique
+
+  - name: fct_ventas
+    description: "Tabla de hechos de ventas, con una fila por id_venta."
+
+    columns:
+      - name: venta_key
+        data_tests:
+          - unique
+          - not_null
+
+      - name: id_venta
+        data_tests:
+          - unique
+          - not_null
+
+      - name: unidad_key
+        data_tests:
+          - not_null
+
+  - name: dim_personas
+    description: "Dimensión de personas deduplicadas entre clientes y copropietarios."
+
+    columns:
+      - name: persona_key
+        data_tests:
+          - unique
+          - not_null
+
+      - name: persona_natural_key
+        data_tests:
+          - unique
+          - not_null
+
+  - name: bridge_venta_persona
+    description: "Tabla puente entre ventas y personas."
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - venta_key
+              - persona_key
+              - rol_persona_en_venta
+
+    columns:
+      - name: venta_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_ventas')
+                field: venta_key
+
+      - name: persona_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_personas')
+                field: persona_key
+
+  - name: fct_ingresos
+    description: "Tabla de hechos de ingresos, con una fila por movimiento de ingreso."
+
+    columns:
+      - name: ingreso_key
+        data_tests:
+          - unique
+          - not_null
+
+      - name: monto_pagado
+        data_tests:
+          - not_null
+
+  - name: fct_facturas
+    description: "Tabla de hechos de facturación, con una fila por factura."
+
+    columns:
+      - name: factura_key
+        data_tests:
+          - unique
+          - not_null
+
+      - name: total_factura
+        data_tests:
+          - not_null
+
+      - name: uuid
+        data_tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    description: "Dimensión de fechas con una fila por día."
+
+    columns:
+      - name: date_day
+        data_tests:
+          - unique
+          - not_null

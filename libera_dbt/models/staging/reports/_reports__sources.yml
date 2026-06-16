@@ -1,0 +1,41 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Tablas que seleccioné de Manivela (NOTA creo que se puede mejorarar la ubicación)
+    database: raw
+    schema: raw  
+    tables:
+      - name: rp_clientes
+        description: Tabla de clientes, propietarios titulares, que viene de Manivela con mucha 
+          info extra que no se va a usar.
+
+      - name: rp_copropiedades
+        description: Tabla de copropietarios asociada a ventas.
+
+      - name: rp_vista_ventas
+        description: Tabla de ventas. Viene de Manivela.
+
+      - name: rp_flujo_ingresos
+        description: Tabla de flujo de ingresos. Viene de Manivela.
+
+      - name: rp_facturas
+        description: Tabla de facturas. Viene de Manivela.
+
+      - name: rp_cliente_canceladas
+        description: Tabla de clientes cancelados. Viene de Manivela.
+
+      - name: rp_copropiedades_canceladas
+        description: Tabla de copropiedades canceladas. Viene de Manivela.
+
+      - name: rp_flujo_ingresos_ventacancelada
+        description: Tabla de flujo de ingresos de ventas canceladas. Viene de Manivela.
+
+      - name: rp_cartera_vencida_detallado
+        description: Tabla de pagos vencidos. Viene de Manivela.
+
+      - name: rp_dashboard_operaciones
+        description: Tabla de operaciones.
+
+      - name: rp_cronograma_unidades
+        description: Tabla de proceso con hitos o etapas conocidas.
