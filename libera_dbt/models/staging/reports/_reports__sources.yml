@@ -30,3 +30,12 @@ sources:
 
       - name: rp_flujo_ingresos_ventacancelada
         description: Tabla de flujo de ingresos de ventas canceladas. Viene de Manivela.
+
+      - name: rp_cartera_vencida_detallado
+        description: Tabla de pagos vencidos. Viene de Manivela.
+
+      - name: rp_dashboard_operaciones
+        description: Tabla de operaciones.
+
+      - name: rp_cronograma_unidades
+        description: Tabla de proceso con hitos o etapas conocidas.

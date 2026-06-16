@@ -13,6 +13,10 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
+seeds:
+  pipeline_libera_dbt:
+    +schema: seeds
+
 models:
   pipeline_libera_dbt:
     +static_analysis: strict
@@ -24,6 +28,9 @@ models:
     warehouse:
       +schema: warehouse
       +materialized: view
+
+      int:
+        +materialized: ephemeral
 
     marts:
       +schema: marts
