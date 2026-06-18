@@ -20,6 +20,11 @@ models:
   - name: fct_ventas
     description: "Tabla de hechos de ventas, con una fila por id_venta."
 
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "fecha_ultimo_pago_enganche >= fecha_primer_enganche"
+
     columns:
       - name: venta_key
         data_tests:
@@ -34,6 +39,60 @@ models:
       - name: unidad_key
         data_tests:
           - not_null
+
+  - name: fct_cartera_vencida
+    description: >
+      Fact table con el detalle de pagos vencidos. El grano es una fila por
+      pago vencido de una venta, definido por id_venta, no_pago, fecha_pago
+      y tipo_pago.
+
+    columns:
+      - name: cartera_vencida_key
+        description: Llave surrogate del pago vencido.
+        tests:
+          - unique
+          - not_null
+
+      - name: id_venta
+        description: Identificador operativo de la venta asociada al pago vencido.
+
+      - name: venta_key
+        description: Llave surrogate de la venta. No se fuerza relación obligatoria contra fct_ventas en esta fase.
+
+      - name: unidad_key
+        description: Llave surrogate de la unidad asociada al pago vencido.
+
+      - name: no_pago
+        description: Número de pago vencido.
+        tests:
+          - not_null
+
+      - name: fecha_pago
+        description: Fecha programada del pago vencido.
+        tests:
+          - not_null
+
+      - name: monto_vencido
+        description: Monto vencido del pago.
+        tests:
+          - not_null
+
+      - name: dias_atraso
+        description: Días de atraso del pago vencido.
+        tests:
+          - not_null
+
+      - name: tipo_pago
+        description: Tipo de pago vencido.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+            - id_venta
+            - no_pago
+            - fecha_pago
+            - tipo_pago
 
   - name: dim_personas
     description: "Dimensión de personas deduplicadas entre clientes y copropietarios."

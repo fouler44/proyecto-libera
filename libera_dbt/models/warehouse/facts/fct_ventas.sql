@@ -8,6 +8,17 @@ ventas AS (
 
 ),
 
+dashboard AS (
+
+    SELECT
+        id_venta,
+        precio_m2_venta,
+        requiere_factura
+    FROM {{ ref('stg_reports__dashboard_operaciones') }}
+    WHERE id_venta IS NOT NULL
+
+),
+
 final AS (
 
     SELECT
@@ -40,17 +51,20 @@ final AS (
         a.fecha_registro_carga_contrato,
 
         v.precio_venta,
+        d.precio_m2_venta,
         a.enganche,
         a.financiamiento,
         a.valor_escritura,
         a.num_mensualidades,
         a.dia_pago,
-        a.entro_dv
+        a.entro_dv,
+        d.requiere_factura
 
     FROM ventas v
     LEFT JOIN atributos a
         ON v.id_venta = a.id_venta
-
+    LEFT JOIN dashboard d
+        ON v.id_venta = d.id_venta
 )
 
 SELECT * FROM final
