@@ -1,6 +1,6 @@
-WITH personas AS (
+with personas as (
 
-    SELECT
+    select
         id_venta,
         rol_persona_en_venta,
         nombre_cliente,
@@ -29,11 +29,11 @@ WITH personas AS (
         estado_civil,
         regimen,
         es_venta_cancelada
-    FROM {{ ref('stg_reports__clientes') }}
+    from {{ ref('stg_reports__clientes') }}
 
-    UNION ALL
+    union all
 
-    SELECT
+    select
         id_venta,
         rol_persona_en_venta,
         nombre_cliente,
@@ -62,38 +62,38 @@ WITH personas AS (
         estado_civil,
         regimen,
         es_venta_cancelada
-    FROM {{ ref('stg_reports__copropiedades') }}
+    from {{ ref('stg_reports__copropiedades') }}
 
 ),
 
-prepared AS (
+prepared as (
 
-    SELECT
+    select
         *,
 
-        CONCAT_WS(
+        concat_ws(
             ' ',
             nombre_cliente,
             apellido_paterno,
             apellido_materno
-        ) AS nombre_completo,
+        ) as nombre_completo,
 
-        CASE
-            WHEN curp IS NOT NULL AND curp != '' THEN curp
-            WHEN rfc IS NOT NULL AND rfc != '' THEN rfc
-            WHEN email IS NOT NULL AND email != '' THEN LOWER(email)
-            ELSE CONCAT_WS(
+        case
+            when curp is not null and curp != '' then curp
+            when rfc is not null and rfc != '' then rfc
+            when email is not null and email != '' then lower(email)
+            else concat_ws(
                 '|',
                 nombre_cliente,
                 apellido_paterno,
                 apellido_materno,
                 telefono_celular
             )
-        END AS persona_natural_key
+        end as persona_natural_key
 
-    FROM personas
-    WHERE id_venta IS NOT NULL
+    from personas
+    where id_venta is not null
 
 )
 
-SELECT DISTINCT * FROM prepared
+select distinct * from prepared

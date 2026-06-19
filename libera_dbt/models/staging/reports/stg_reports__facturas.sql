@@ -1,28 +1,28 @@
-WITH
+with
 
-source AS (
+source as (
 
-    SELECT * FROM {{ source('raw', 'rp_facturas') }}
+    select * from {{ source('raw', 'rp_facturas') }}
 
 ),
 
-renamed AS (
+renamed as (
 
-    SELECT
-        TRIM(FOLIOGENERAL_FACTURA) AS folio_general,
-        TRIM(UUID) AS uuid,
-        TRIM(UUI_DRELACIONADO) AS uuid_relacionado,
-        TRIM(RFC_EMISOR) AS rfc_emisor,
-        TRIM(RFC_RECEPTOR) AS rfc_receptor,
-        TRIM(UPPER(RAZON_SOCIAL_EMISOR)) AS razon_social_emisor,
-        TRIM(UPPER(RAZON_SOCIAL_RECEPTOR)) AS razon_social_receptor,
-        CAST(FECHA_TIMBRADO AS DATE) AS fecha_timbrado,
-        TIPO_FACTURA AS tipo_factura,
-        TOTAL_FACTURA AS total_factura,
-        TRIM(FOLIO_SEGUIMIENTO) AS folio_seguimiento,
-        TRIM(TIPO_PAGO) AS tipo_pago
+    select
+        trim(FOLIOGENERAL_FACTURA) as folio_general,
+        trim(UUID) as uuid,
+        trim(UUI_DRELACIONADO) as uuid_relacionado,
+        trim(RFC_EMISOR) as rfc_emisor,
+        trim(RFC_RECEPTOR) as rfc_receptor,
+        trim(upper(RAZON_SOCIAL_EMISOR)) as razon_social_emisor,
+        trim(upper(RAZON_SOCIAL_RECEPTOR)) as razon_social_receptor,
+        cast(FECHA_TIMBRADO as date) as fecha_timbrado,
+        TIPO_FACTURA as tipo_factura,
+        TOTAL_FACTURA as total_factura,
+        trim(FOLIO_SEGUIMIENTO) as folio_seguimiento,
+        trim(TIPO_PAGO) as tipo_pago
 
-    FROM source
+    from source
 )
 
-SELECT * FROM renamed
+select * from renamed

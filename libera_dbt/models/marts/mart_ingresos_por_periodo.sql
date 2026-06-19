@@ -1,25 +1,25 @@
-WITH ingresos AS (
+with ingresos as (
 
-    SELECT *
-    FROM {{ ref('fct_ingresos') }}
-
-),
-
-unidades AS (
-
-    SELECT *
-    FROM {{ ref('dim_unidades') }}
+    select *
+    from {{ ref('fct_ingresos') }}
 
 ),
 
-fechas AS (
+unidades as (
 
-    SELECT *
-    FROM {{ ref('dim_date') }}
+    select *
+    from {{ ref('dim_unidades') }}
+
+),
+
+fechas as (
+
+    select *
+    from {{ ref('dim_date') }}
 
 )
 
-SELECT
+select
     d.year,
     d.month,
     d.month_name,
@@ -33,18 +33,18 @@ SELECT
     i.concepto,
     i.status_ingreso,
 
-    COUNT(*) AS numero_movimientos,
-    SUM(i.monto_pagado) AS total_ingresado
+    count(*) as numero_movimientos,
+    sum(i.monto_pagado) as total_ingresado
 
-FROM ingresos i
+from ingresos i
 
-LEFT JOIN unidades u
-    ON i.unidad_key = u.unidad_key
+left join unidades u
+    on i.unidad_key = u.unidad_key
 
-LEFT JOIN fechas d
-    ON i.fecha_ingreso = d.date_day
+left join fechas d
+    on i.fecha_ingreso = d.date_day
 
-GROUP BY
+group by
     d.year,
     d.month,
     d.month_name,

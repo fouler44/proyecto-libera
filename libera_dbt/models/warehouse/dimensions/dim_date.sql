@@ -23,9 +23,9 @@ select
     date_format(date_day, 'EEEE') as day_name,
     weekofyear(date_day) as week_of_year,
 
-    case 
-        when dayofweek(date_day) in (1, 7) then true 
-        else false 
+    case
+        when dayofweek(date_day) in (1, 7) then true
+        else false
     end as is_weekend
 
 from date_spine

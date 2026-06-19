@@ -1,43 +1,43 @@
-WITH personas AS (
+with personas as (
 
-    SELECT
+    select
         {{ dbt_utils.generate_surrogate_key([
             'persona_natural_key'
-        ]) }} AS persona_key,
+        ]) }} as persona_key,
 
         persona_natural_key,
 
-        MAX(nombre_completo) AS nombre_completo,
-        MAX(nombre_cliente) AS nombre_cliente,
-        MAX(apellido_paterno) AS apellido_paterno,
-        MAX(apellido_materno) AS apellido_materno,
-        MAX(edad) AS edad,
-        MAX(rfc) AS rfc,
-        MAX(curp) AS curp,
-        MAX(LOWER(email)) AS email,
-        MAX(telefono_celular) AS telefono_celular,
-        MAX(telefono_local) AS telefono_local,
-        MAX(sexo) AS sexo,
-        MAX(estado_civil) AS estado_civil,
-        MAX(regimen) AS regimen,
-        MAX(ocupacion) AS ocupacion,
-        MAX(nacionalidad) AS nacionalidad,
-        MAX(lugar_nacimiento) AS lugar_nacimiento,
-        MAX(calle) AS calle,
-        MAX(no_exterior) AS no_exterior,
-        MAX(no_interior) AS no_interior,
-        MAX(colonia) AS colonia,
-        MAX(codigo_postal) AS codigo_postal,
-        MAX(localidad) AS localidad,
-        MAX(estado) AS estado,
-        MAX(pais) AS pais,
-        MAX(identificacion) AS identificacion,
-        MAX(no_identificacion) AS no_identificacion
+        max(nombre_completo) as nombre_completo,
+        max(nombre_cliente) as nombre_cliente,
+        max(apellido_paterno) as apellido_paterno,
+        max(apellido_materno) as apellido_materno,
+        max(edad) as edad,
+        max(rfc) as rfc,
+        max(curp) as curp,
+        max(lower(email)) as email,
+        max(telefono_celular) as telefono_celular,
+        max(telefono_local) as telefono_local,
+        max(sexo) as sexo,
+        max(estado_civil) as estado_civil,
+        max(regimen) as regimen,
+        max(ocupacion) as ocupacion,
+        max(nacionalidad) as nacionalidad,
+        max(lugar_nacimiento) as lugar_nacimiento,
+        max(calle) as calle,
+        max(no_exterior) as no_exterior,
+        max(no_interior) as no_interior,
+        max(colonia) as colonia,
+        max(codigo_postal) as codigo_postal,
+        max(localidad) as localidad,
+        max(estado) as estado,
+        max(pais) as pais,
+        max(identificacion) as identificacion,
+        max(no_identificacion) as no_identificacion
 
-    FROM {{ ref('int_venta_persona') }}
-    WHERE persona_natural_key IS NOT NULL
-    GROUP BY persona_natural_key
+    from {{ ref('int_venta_persona') }}
+    where persona_natural_key is not null
+    group by persona_natural_key
 
 )
 
-SELECT * FROM personas
+select * from personas

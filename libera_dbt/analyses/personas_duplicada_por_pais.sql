@@ -1,18 +1,18 @@
-SELECT
+select
     id_venta,
     nombre_cliente,
     apellido_paterno,
     apellido_materno,
     rfc,
     curp,
-    COUNT(*) AS total_filas,
-    COUNT(DISTINCT pais) AS paises_distintos
-FROM {{ ref('stg_reports__clientes') }}
-GROUP BY
+    count(*) as total_filas,
+    count(distinct pais) as paises_distintos
+from {{ ref('stg_reports__clientes') }}
+group by
     id_venta,
     nombre_cliente,
     apellido_paterno,
     apellido_materno,
     rfc,
     curp
-HAVING COUNT(*) > 1
+having count(*) > 1

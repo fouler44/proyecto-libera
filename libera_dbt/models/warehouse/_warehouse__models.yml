@@ -40,14 +40,14 @@ models:
         data_tests:
           - not_null
 
-  - name: fct_cartera_vencida
+  - name: fct_pagos_vencidos
     description: >
       Fact table con el detalle de pagos vencidos. El grano es una fila por
       pago vencido de una venta, definido por id_venta, no_pago, fecha_pago
       y tipo_pago.
 
     columns:
-      - name: cartera_vencida_key
+      - name: pago_vencido_key
         description: Llave surrogate del pago vencido.
         tests:
           - unique
@@ -93,6 +93,44 @@ models:
             - no_pago
             - fecha_pago
             - tipo_pago
+
+  - name: fct_cronograma_unidades
+    description: >
+      Fact tipo snapshot acumulado que representa el avance operativo de una
+      unidad por los hitos del cronograma. El grano es una fila por
+      desarrollo_largo + unidad.
+
+    columns:
+      - name: cronograma_unidad_key
+        description: Llave surrogate del cronograma de la unidad.
+        tests:
+          - unique
+          - not_null
+
+      - name: unidad_key
+        description: Llave surrogate de la unidad asociada al cronograma.
+        tests:
+          - not_null
+
+      - name: desarrollo_largo
+        description: Desarrollo largo normalizado para alinearse con dim_unidades.
+        tests:
+          - not_null
+
+      - name: unidad
+        description: Identificador operativo de la unidad.
+        tests:
+          - not_null
+
+      - name: estatus_cronograma_actual
+        description: Estatus derivado a partir del último hito disponible.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+            - desarrollo_largo
+            - unidad
 
   - name: dim_personas
     description: "Dimensión de personas deduplicadas entre clientes y copropietarios."

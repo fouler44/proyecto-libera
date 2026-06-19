@@ -1,78 +1,78 @@
-WITH
+with
 
-source AS (
+source as (
 
-    SELECT * FROM {{ source('raw', 'rp_cliente_canceladas') }}
+    select * from {{ source('raw', 'rp_cliente_canceladas') }}
 
 ),
 
-renamed AS (
+renamed as (
 
-    SELECT
+    select
         id_venta,
-        TRIM(UPPER(DESARROLLO_LARGO)) AS desarrollo_largo,
-        TRIM(UPPER(DESARROLLO_CORTO)) AS desarrollo_corto,
-        UNIDAD AS unidad,
-        TRIM(ETAPA) AS etapa,
-        TRIM(UPPER(ASESOR)) AS asesor,
-        TRIM(STATUSVENTA) AS status_venta,
-        CAST(FECHACONTRATO AS DATE) AS fecha_contrato,
-        CAST(FECHAFIRMACONTRATO AS DATE) AS fecha_firma_contrato,
-        CASE
-            WHEN TRIM(PLAN) LIKE '%CONTADO%' THEN 'CONTADO'
-            WHEN TRIM(PLAN) LIKE '48 MEESES%' THEN '48 MESES'
-            ELSE TRIM(PLAN)
-        END AS plan,
-        NOMENSUALIDADES AS num_mensualidades,
-        PRECIOVENTA AS precio_venta,
-        ENGANCHE AS enganche,
-        FINANCIAMIENTO AS financiamiento,
-        STATUSESCRITURA AS status_escritura,
-        CAST(FECHAESCRITURA AS DATE) AS fecha_escritura,
-        VALORESCRITURA AS valor_escritura,
-        DIAPAGO AS dia_pago,
-        TRIM(UPPER(NOMBRECLIENTE)) AS nombre_cliente,
-        TRIM(UPPER(APELLIDOPATERNO)) AS apellido_paterno,
-        TRIM(UPPER(APELLIDOMATERNO)) AS apellido_materno,
-        CASE
-            WHEN TRIM(EDAD) = 'CUARENTA Y DOS' THEN 42
-            ELSE CAST(TRIM(EDAD) AS INT)
-        END AS edad,
-        TRIM(UPPER(
+        trim(upper(DESARROLLO_LARGO)) as desarrollo_largo,
+        trim(upper(DESARROLLO_CORTO)) as desarrollo_corto,
+        UNIDAD as unidad,
+        trim(ETAPA) as etapa,
+        trim(upper(ASESOR)) as asesor,
+        trim(STATUSVENTA) as status_venta,
+        cast(FECHACONTRATO as date) as fecha_contrato,
+        cast(FECHAFIRMACONTRATO as date) as fecha_firma_contrato,
+        case
+            when trim(PLAN) like '%CONTADO%' then 'CONTADO'
+            when trim(PLAN) like '48 MEESES%' then '48 MESES'
+            else trim(PLAN)
+        end as plan,
+        NOMENSUALIDADES as num_mensualidades,
+        PRECIOVENTA as precio_venta,
+        ENGANCHE as enganche,
+        FINANCIAMIENTO as financiamiento,
+        STATUSESCRITURA as status_escritura,
+        cast(FECHAESCRITURA as date) as fecha_escritura,
+        VALORESCRITURA as valor_escritura,
+        DIAPAGO as dia_pago,
+        trim(upper(NOMBRECLIENTE)) as nombre_cliente,
+        trim(upper(APELLIDOPATERNO)) as apellido_paterno,
+        trim(upper(APELLIDOMATERNO)) as apellido_materno,
+        case
+            when trim(EDAD) = 'CUARENTA Y DOS' then 42
+            else cast(trim(EDAD) as int)
+        end as edad,
+        trim(upper(
             decode(encode(LUGARNACIMIENTO, 'ISO-8859-1'), 'UTF-8')
-        )) AS lugar_nacimiento,
-        TRIM(UPPER(RFC)) AS rfc,
-        TRIM(UPPER(CURP)) AS curp,
-        CALLE AS calle,
-        TRIM(NOEXTERIOR) AS no_exterior,
-        TRIM(NOINTERIOR) AS no_interior,
-        TRIM(UPPER(COLONIA)) AS colonia,
-        CAST(CODIGOPOSTAL AS STRING) AS codigo_postal,
-        CASE
-            WHEN TRIM(UPPER(LOCALIDAD)) = '0' THEN NULL
-            ELSE TRIM(UPPER(LOCALIDAD))
-        END AS localidad,
-        TRIM(UPPER(ESTADO)) AS estado,
-        TRIM(UPPER(PAIS)) AS pais,
-        TRIM(NACIONALIDAD) AS nacionalidad,
-        TRIM(UPPER(OCUPACION)) AS ocupacion,
-        TRIM(EMAIL) AS email,
-        TRIM(TELEFONOCELULAR) AS telefono_celular,
-        TRIM(TELEFONOLOCAL) AS telefono_local,
-        TRIM(UPPER(IDENTIFICACION)) AS identificacion,
-        TRIM(NOIDENTIFICACION) AS no_identificacion,
-        CAST(FECHAPROSPECTACION AS DATE) AS fecha_prospectacion,
-        CAST(FECHAREGISTROVENTA AS DATE) AS fecha_registro_venta, 
-        TRY_CAST(NULLIF(TRIM(FECHAAPROBACIONJD), 'NULL') AS DATE) AS fecha_aprobacion_jd,
-        TRY_CAST(NULLIF(TRIM(FECHAREGISTROCARGACONTRATO), 'NULL') AS DATE) AS fecha_registro_carga_contrato,
-        ENTRODV AS entro_dv,
-        TRIM(UPPER(SEXO)) AS sexo,
-        TRIM(UPPER(ESTADOCIVIL)) AS estado_civil,
-        TRIM(UPPER(REGIMEN)) AS regimen,
-        'cliente_principal' AS rol_persona_en_venta,
-        TRUE AS es_venta_cancelada
+        )) as lugar_nacimiento,
+        trim(upper(RFC)) as rfc,
+        trim(upper(CURP)) as curp,
+        CALLE as calle,
+        trim(NOEXTERIOR) as no_exterior,
+        trim(NOINTERIOR) as no_interior,
+        trim(upper(COLONIA)) as colonia,
+        cast(CODIGOPOSTAL as string) as codigo_postal,
+        case
+            when trim(upper(LOCALIDAD)) = '0' then null
+            else trim(upper(LOCALIDAD))
+        end as localidad,
+        trim(upper(ESTADO)) as estado,
+        trim(upper(PAIS)) as pais,
+        trim(NACIONALIDAD) as nacionalidad,
+        trim(upper(OCUPACION)) as ocupacion,
+        trim(EMAIL) as email,
+        trim(TELEFONOCELULAR) as telefono_celular,
+        trim(TELEFONOLOCAL) as telefono_local,
+        trim(upper(IDENTIFICACION)) as identificacion,
+        trim(NOIDENTIFICACION) as no_identificacion,
+        cast(FECHAPROSPECTACION as date) as fecha_prospectacion,
+        cast(FECHAREGISTROVENTA as date) as fecha_registro_venta,
+        try_cast(nullif(trim(FECHAAPROBACIONJD), 'NULL') as date) as fecha_aprobacion_jd,
+        try_cast(nullif(trim(FECHAREGISTROCARGACONTRATO), 'NULL') as date) as fecha_registro_carga_contrato,
+        ENTRODV as entro_dv,
+        trim(upper(SEXO)) as sexo,
+        trim(upper(ESTADOCIVIL)) as estado_civil,
+        trim(upper(REGIMEN)) as regimen,
+        'cliente_principal' as rol_persona_en_venta,
+        true as es_venta_cancelada
 
-    FROM source
+    from source
 )
 
-SELECT * FROM renamed
+select * from renamed

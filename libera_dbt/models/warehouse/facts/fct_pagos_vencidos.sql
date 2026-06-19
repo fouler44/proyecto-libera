@@ -13,7 +13,7 @@ final as (
             'no_pago',
             'fecha_pago',
             'tipo_pago'
-        ]) }} as cartera_vencida_key,
+        ]) }} as pago_vencido_key,
 
         case
             when id_venta is not null

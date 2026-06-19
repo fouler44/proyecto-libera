@@ -1,8 +1,8 @@
-WITH ingresos AS (
+with ingresos as (
 
-    SELECT *
-    FROM {{ ref('stg_reports__flujo_ingresos') }}
-    WHERE concat_ws(
+    select *
+    from {{ ref('stg_reports__flujo_ingresos') }}
+    where concat_ws(
         '',
         cast(id_venta as string),
         folio,
@@ -24,13 +24,13 @@ WITH ingresos AS (
         nombre_tercero,
         cast(fecha_captura as string)
     ) != ''
-      AND monto_pagado IS NOT NULL
+      and monto_pagado is not null
 
 ),
 
-final AS (
+final as (
 
-    SELECT
+    select
         {{ dbt_utils.generate_surrogate_key([
             'id_venta',
             'folio',
@@ -42,18 +42,18 @@ final AS (
             'concepto',
             'forma_pago',
             'banco'
-        ]) }} AS ingreso_key,
+        ]) }} as ingreso_key,
 
         {{ dbt_utils.generate_surrogate_key([
             'id_venta'
-        ]) }} AS venta_key,
+        ]) }} as venta_key,
 
         id_venta,
 
         {{ dbt_utils.generate_surrogate_key([
             'desarrollo_largo',
             'unidad'
-        ]) }} AS unidad_key,
+        ]) }} as unidad_key,
 
         folio,
         status_ingreso,
@@ -70,8 +70,8 @@ final AS (
         cliente,
         monto_pagado
 
-    FROM ingresos
+    from ingresos
 
 )
 
-SELECT * FROM final
+select * from final

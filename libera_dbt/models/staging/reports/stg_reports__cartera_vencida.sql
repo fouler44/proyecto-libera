@@ -1,32 +1,32 @@
-WITH 
+with
 
-source AS (
+source as (
 
-    SELECT * FROM {{ source('raw', 'rp_cartera_vencida_detallado') }}
-    
+    select * from {{ source('raw', 'rp_cartera_vencida_detallado') }}
+
 ),
 
-renamed AS (
-    SELECT
+renamed as (
+    select
         id_venta,
-        TRIM(UPPER(EQUIPO)) AS equipo,
-        TRIM(UPPER(DESARROLLOLARGO)) AS desarrollo_largo,
-        TRIM(UPPER(DESARROLLOCORTO)) AS desarrollo_corto,
-        TRIM(UPPER(UNIDAD)) AS unidad,
-        TRIM(UPPER(CLIENTE)) AS cliente,
-        
-        TRIM(CORREOELECTRONICO) AS email,
-        TRIM(TELEFONOCELULAR) AS telefono_celular,
-        TRIM(TELEFONOLOCAL) AS telefono_local,
-        
-        DIASATRASO AS dias_atraso,
-        NOPAGO AS no_pago,
-        TRY_CAST(FECHAPAGO AS DATE) AS fecha_pago,
-        MONTOVENCIDO AS monto_vencido,
-        
-        INITCAP(TRIM(LOWER(TIPOPAGO))) AS tipo_pago
+        trim(upper(EQUIPO)) as equipo,
+        trim(upper(DESARROLLOLARGO)) as desarrollo_largo,
+        trim(upper(DESARROLLOCORTO)) as desarrollo_corto,
+        trim(upper(UNIDAD)) as unidad,
+        trim(upper(CLIENTE)) as cliente,
 
-    FROM source
+        trim(CORREOELECTRONICO) as email,
+        trim(TELEFONOCELULAR) as telefono_celular,
+        trim(TELEFONOLOCAL) as telefono_local,
+
+        DIASATRASO as dias_atraso,
+        NOPAGO as no_pago,
+        try_cast(FECHAPAGO as date) as fecha_pago,
+        MONTOVENCIDO as monto_vencido,
+
+        initcap(trim(lower(TIPOPAGO))) as tipo_pago
+
+    from source
 )
 
-SELECT * FROM renamed
+select * from renamed
