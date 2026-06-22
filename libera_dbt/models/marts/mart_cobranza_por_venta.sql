@@ -1,82 +1,97 @@
-WITH ventas AS (
+with ventas as (
 
-    SELECT *
-    FROM {{ ref('fct_ventas') }}
-
-),
-
-unidades AS (
-
-    SELECT *
-    FROM {{ ref('dim_unidades') }}
+    select *
+    from {{ ref('fct_ventas') }}
 
 ),
 
-ingresos AS (
+unidades as (
 
-    SELECT *
-    FROM {{ ref('fct_ingresos') }}
+    select *
+    from {{ ref('dim_unidades') }}
 
 ),
 
-ingresos_por_venta AS (
+ingresos as (
 
-    SELECT
+    select *
+    from {{ ref('fct_ingresos') }}
+    where venta_key is not null
+
+),
+
+ingresos_por_venta as (
+
+    select
         venta_key,
 
-        SUM(monto_pagado) AS total_ingresado,
-        COUNT(*) AS numero_movimientos_ingreso,
-        MIN(fecha_ingreso) AS fecha_primer_ingreso,
-        MAX(fecha_ingreso) AS fecha_ultimo_ingreso
+        coalesce(sum(monto_pagado), 0) as total_ingresado,
+        count(*) as numero_movimientos_ingreso,
+        min(fecha_ingreso) as fecha_primer_ingreso,
+        max(fecha_ingreso) as fecha_ultimo_ingreso
 
-    FROM ingresos
+    from ingresos
 
-    WHERE venta_key IS NOT NULL
-
-    GROUP BY
+    group by
         venta_key
+
+),
+
+ventas_con_unidad as (
+
+    select
+        v.venta_key,
+        v.id_venta,
+
+        u.desarrollo_largo,
+        u.desarrollo_corto,
+        u.etapa,
+        u.unidad,
+        u.modelo,
+
+        v.status_venta,
+        v.status_unidad,
+        v.plan,
+        v.equipo,
+        v.asesor,
+
+        v.fecha_contrato,
+        v.fecha_primer_enganche,
+        v.fecha_ultimo_pago_enganche,
+
+        v.precio_venta,
+        
+        coalesce(i.total_ingresado, 0) as total_ingresado,
+        coalesce(i.numero_movimientos_ingreso, 0) as numero_movimientos_ingreso,
+        i.fecha_primer_ingreso,
+        i.fecha_ultimo_ingreso
+
+    from ventas v
+
+    left join unidades u
+        on v.unidad_key = u.unidad_key
+
+    left join ingresos_por_venta i
+        on v.venta_key = i.venta_key
+
+),
+
+metricas as (
+
+    select
+        *,
+
+        precio_venta - total_ingresado as saldo_estimado,
+
+        case
+            when precio_venta > 0
+                then round(total_ingresado / precio_venta * 100, 2)
+            else null
+        end as porcentaje_cobrado
+
+    from ventas_con_unidad
 
 )
 
-SELECT
-    v.venta_key,
-    v.id_venta,
-
-    u.desarrollo_largo,
-    u.desarrollo_corto,
-    u.etapa,
-    u.unidad,
-    u.modelo,
-
-    v.status_venta,
-    v.status_unidad,
-    v.plan,
-    v.equipo,
-    v.asesor,
-
-    v.fecha_contrato,
-    v.fecha_primer_enganche,
-    v.fecha_ultimo_pago_enganche,
-
-    v.precio_venta,
-    COALESCE(i.total_ingresado, 0) AS total_ingresado,
-
-    v.precio_venta - COALESCE(i.total_ingresado, 0) AS saldo_estimado,
-
-    CASE
-        WHEN v.precio_venta > 0
-            THEN COALESCE(i.total_ingresado, 0) / v.precio_venta
-        ELSE NULL
-    END AS porcentaje_cobrado,
-
-    COALESCE(i.numero_movimientos_ingreso, 0) AS numero_movimientos_ingreso,
-    i.fecha_primer_ingreso,
-    i.fecha_ultimo_ingreso
-
-FROM ventas v
-
-LEFT JOIN unidades u
-    ON v.unidad_key = u.unidad_key
-
-LEFT JOIN ingresos_por_venta i
-    ON v.venta_key = i.venta_key
+select *
+from metricas

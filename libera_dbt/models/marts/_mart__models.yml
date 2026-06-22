@@ -39,6 +39,39 @@ models:
         tests:
           - not_null
 
+  - name: mart_dash_cron
+    description: >
+      Mart que reemplaza el reporte tc_gl_Dash_Cron. Parte del dashboard
+      operativo, agrega fechas del cronograma de unidades y el grupo del
+      desarrollo desde dim_unidades.
+
+    columns:
+      - name: id_venta
+        description: Identificador de venta del dashboard operativo.
+        tests:
+          - not_null
+
+      - name: unidad_key
+        description: Llave surrogate de la unidad usada para unir dashboard, cronograma y dim_unidades.
+        tests:
+          - not_null
+
+      - name: unidad
+        tests:
+          - not_null
+
+      - name: desarrollo_largo
+        tests:
+          - not_null
+
+      - name: desarrollo_corto
+        tests:
+          - not_null
+
+      - name: precio_venta
+        tests:
+          - not_null
+
   - name: mart_facturacion
     columns:
       - name: factura_key
@@ -52,5 +85,43 @@ models:
           - not_null
 
       - name: total_factura
+        tests:
+          - not_null
+
+
+  - name: mart_dash_cron_reconstruido
+    description: >
+      Mart reconstruido del dashboard de operaciones. A diferencia del mart
+      equivalente al reporte original, este modelo calcula ingresos, cartera
+      vencida y saldos desde facts del warehouse.
+
+    columns:
+      - name: venta_key
+        tests:
+          - unique
+          - not_null
+
+      - name: id_venta
+        tests:
+          - unique
+          - not_null
+
+      - name: unidad_key
+        tests:
+          - not_null
+
+      - name: precio_venta
+        tests:
+          - not_null
+
+      - name: total_cobrado
+        tests:
+          - not_null
+
+      - name: total_vencido
+        tests:
+          - not_null
+
+      - name: saldo_total_estimado
         tests:
           - not_null
