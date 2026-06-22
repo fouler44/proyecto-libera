@@ -522,7 +522,8 @@ Estandarizar hitos del cronograma operativo de unidades.
 
 ### Tests actuales
 
-No tiene tests directos en staging.
+- `desarrollo_largo`: `not_null`
+- `unidad`: `not_null`
 
 ### Riesgos o pendientes
 
@@ -530,8 +531,6 @@ No tiene tests directos en staging.
   original, pero debe quedar documentada porque es facil confundirse.
 - No tiene `id_venta`; la relacion se hace por `desarrollo_largo + unidad` o
   `unidad_key`, que es mas debil que una llave de venta.
-- Conviene agregar tests para `desarrollo_largo` y `unidad` si se confirma que
-  son obligatorios.
 
 ## `stg_reports__cartera_vencida`
 
@@ -573,7 +572,9 @@ Estandarizar el detalle de pagos vencidos. Alimenta `fct_pagos_vencidos`.
 
 ### Tests actuales
 
-No tiene tests directos en staging.
+- `monto_vencido`: `not_null`
+- `fecha_pago`: `not_null`
+- `no_pago`: `not_null`
 
 ### Riesgos o pendientes
 
@@ -581,8 +582,6 @@ No tiene tests directos en staging.
   `id_venta` que no exista en `fct_ventas`.
 - Los datos de contacto no necesariamente deben conectarse a `dim_personas`; por
   ahora son texto informativo.
-- Conviene agregar tests basicos para `monto_vencido`, `fecha_pago` y `no_pago`
-  si se consideran obligatorios desde staging.
 
 ## `stg_reports__cliente_canceladas`
 
