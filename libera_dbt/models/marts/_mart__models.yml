@@ -3,6 +3,8 @@ version: 2
 models:
   - name: mart_comercial_ventas
     description: Mart comercial con una fila por venta, enriquecido con unidad y cliente principal.
+    config:
+      tags: ['oficial']
     columns:
       - name: venta_key
         tests:
@@ -19,7 +21,12 @@ models:
           - not_null
 
   - name: mart_cobranza_por_venta
-    description: Mart de cobranza con venta, total ingresado y saldo estimado.
+    description: >
+      Mart de cobranza con venta, total ingresado y saldo estimado.
+      Conserva total_ingresado como metrica bruta para compatibilidad, pero
+      calcula saldo_estimado y porcentaje_cobrado con total_ingresado_activo.
+    config:
+      tags: ['oficial']
     columns:
       - name: venta_key
         tests:
@@ -32,6 +39,17 @@ models:
           - not_null
 
       - name: total_ingresado
+        description: Total bruto de ingresos relacionados a la venta, sin filtrar status_ingreso.
+        tests:
+          - not_null
+
+      - name: total_ingresado_bruto
+        description: Alias explicito del total bruto de ingresos; incluye movimientos con status_ingreso distinto de Activo.
+        tests:
+          - not_null
+
+      - name: total_ingresado_activo
+        description: Total de ingresos con status_ingreso Activo. Es la metrica usada para saldo_estimado y porcentaje_cobrado.
         tests:
           - not_null
 
@@ -44,12 +62,18 @@ models:
       Mart que reemplaza el reporte tc_gl_Dash_Cron. Parte del dashboard
       operativo, agrega fechas del cronograma de unidades y el grupo del
       desarrollo desde dim_unidades.
+      Métrica proveniente del reporte operativo original. 
+      Puede diferir de métricas reconstruidas desde fct_ingresos o fct_pagos_vencidos.
+
+    config:
+      tags: ['oficial']
 
     columns:
       - name: id_venta
         description: Identificador de venta del dashboard operativo.
         tests:
           - not_null
+          - unique
 
       - name: unidad_key
         description: Llave surrogate de la unidad usada para unir dashboard, cronograma y dim_unidades.
@@ -72,7 +96,74 @@ models:
         tests:
           - not_null
 
+      - name: total_cobrado
+        description: Metrica legacy proveniente del dashboard operativo original; puede diferir de metricas reconstruidas desde fct_ingresos.
+
+      - name: saldo_total
+        description: Metrica legacy proveniente del dashboard operativo original; puede diferir de saldos reconstruidos desde facts atomicas.
+
+      - name: total_vencido
+        description: Metrica legacy proveniente del dashboard operativo original; puede diferir de metricas reconstruidas desde fct_pagos_vencidos.
+
+  - name: mart_cartera_vencida_por_venta
+    description: Mart de soporte con cartera vencida agregada a nivel venta/unidad.
+    config:
+      tags: ['soporte']
+    columns:
+      - name: total_vencido
+        tests:
+          - not_null
+
+      - name: numero_pagos_vencidos
+        tests:
+          - not_null
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - venta_key
+              - id_venta
+              - unidad_key
+
+  - name: mart_ingresos_por_periodo
+    description: Mart de soporte financiero con ingresos agregados por periodo y atributos operativos.
+    config:
+      tags: ['soporte']
+    columns:
+      - name: numero_movimientos
+        tests:
+          - not_null
+
+      - name: total_ingresado
+        tests:
+          - not_null
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - year
+              - month
+              - month_name
+              - desarrollo_largo
+              - desarrollo_corto
+              - etapa
+              - banco
+              - forma_pago
+              - concepto
+              - status_ingreso
+
   - name: mart_facturacion
+    description: >
+      Mart fiscal independiente. Actualmente no existe 
+      llave confiable para relacionar facturas con ventas. Se conserva como
+      soporte fiscal aislado y no debe usarse para analisis directo de ventas o
+      cobranza.
+
+    config:
+      tags: ['soporte', 'descontinuado']
+
     columns:
       - name: factura_key
         tests:
@@ -91,9 +182,13 @@ models:
 
   - name: mart_dash_cron_reconstruido
     description: >
-      Mart reconstruido del dashboard de operaciones. A diferencia del mart
-      equivalente al reporte original, este modelo calcula ingresos, cartera
-      vencida y saldos desde facts del warehouse.
+      Mart experimental reconstruido del dashboard de operaciones. A diferencia
+      del mart equivalente al reporte original, este modelo calcula ingresos,
+      cartera vencida y saldos desde facts del warehouse. Vive en
+      models/marts/experimental y no debe usarse como reporte oficial.
+
+    config:
+      tags: ['experimental', 'reconciliacion']
 
     columns:
       - name: venta_key
@@ -115,8 +210,12 @@ models:
           - not_null
 
       - name: total_cobrado
+        description: Total cobrado calculado solo con ingresos Activo desde fct_ingresos.
         tests:
           - not_null
+
+      - name: total_cobrado_bruto
+        description: Total cobrado bruto desde fct_ingresos, sin filtrar status_ingreso. Sirve para reconciliacion.
 
       - name: total_vencido
         tests:

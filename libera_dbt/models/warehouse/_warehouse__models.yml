@@ -39,6 +39,10 @@ models:
       - name: unidad_key
         data_tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_unidades')
+                field: unidad_key
 
   - name: fct_pagos_vencidos
     description: >
@@ -188,7 +192,10 @@ models:
           - not_null
 
   - name: fct_facturas
-    description: "Tabla de hechos de facturación, con una fila por factura."
+    description: "Tabla de hechos de facturación, con una fila por factura. Se conserva como soporte fiscal aislado."
+
+    config:
+      tags: ['descontinuado']
 
     columns:
       - name: factura_key

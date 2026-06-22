@@ -12,7 +12,7 @@ renamed as (
         id_venta,
         trim(upper(DESARROLLO_LARGO)) as desarrollo_largo,
         trim(upper(DESARROLLO_CORTO)) as desarrollo_corto,
-        UNIDAD as unidad,
+        trim(upper(UNIDAD)) as unidad,
         trim(ETAPA) as etapa,
         trim(upper(ASESOR)) as asesor,
         trim(STATUSVENTA) as status_venta,
@@ -45,7 +45,7 @@ renamed as (
         trim(upper(APELLIDOMATERNO)) as apellido_materno,
         case
             when trim(EDAD) = 'CUARENTA Y DOS' then 42
-            else cast(trim(EDAD) as int)
+            else try_cast(trim(EDAD) as int)
         end as edad,
         trim(upper(
             decode(encode(LUGARNACIMIENTO, 'ISO-8859-1'), 'UTF-8')
@@ -70,8 +70,8 @@ renamed as (
         trim(TELEFONOLOCAL) as telefono_local,
         trim(upper(IDENTIFICACION)) as identificacion,
         trim(NOIDENTIFICACION) as no_identificacion,
-        cast(FECHAPROSPECTACION as date) as fecha_prospectacion,
-        cast(FECHAREGISTROVENTA as date) as fecha_registro_venta,
+        try_cast(FECHAPROSPECTACION as date) as fecha_prospectacion,
+        try_cast(FECHAREGISTROVENTA as date) as fecha_registro_venta,
         try_cast(nullif(trim(FECHAAPROBACIONJD), 'NULL') as date) as fecha_aprobacion_jd,
         try_cast(nullif(trim(FECHAREGISTROCARGACONTRATO), 'NULL') as date) as fecha_registro_carga_contrato,
         ENTRODV as entro_dv,

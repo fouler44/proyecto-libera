@@ -85,6 +85,19 @@ Puntos clave:
 - `fct_ingresos`, `fct_pagos_vencidos`, `fct_facturas` y
   `fct_cronograma_unidades` no fuerzan relacion obligatoria contra ventas.
 
+## Verificacion de riesgos 2026-06-22
+
+Riesgo 3, uso de `max(...)` para deduplicar: mitigado con auditorias
+singulares iniciales. Existen tests para detectar conflictos en:
+
+- unidades con mas de una etapa o desarrollo corto;
+- ventas con multiples atributos comerciales, incluido `status_escritura`;
+- misma `persona_natural_key` con multiples RFC/CURP/email;
+- cronograma con multiples fechas para la misma unidad;
+- asesores distintos por venta;
+- unidades sin grupo proveniente del seed manual;
+- ventas sin exactamente un cliente principal.
+
 ## Modelos intermedios
 
 Los modelos en `warehouse/int` son `ephemeral`. No se crean como tablas fisicas;
@@ -126,8 +139,9 @@ No tiene tests ni documentacion propia en `_warehouse__models.yml`.
 
 - El uso de `max(...)` puede ocultar conflictos si una misma unidad tiene varias
   etapas o desarrollos cortos en raw.
-- Depende de la normalizacion de `unidad`; si staging no normaliza igual que
-  otros modelos, pueden fallar joins.
+- El riesgo de normalizacion de `unidad` queda mitigado porque staging ya usa
+  `trim(upper(UNIDAD))` de forma consistente. Aun asi, conviene vigilar cambios
+  futuros en fuentes raw.
 
 ## `int_ventas_atributos`
 
@@ -177,7 +191,10 @@ No tiene tests ni documentacion propia en `_warehouse__models.yml`.
 
 - El uso de `max(...)` simplifica el grano, pero puede esconder diferencias entre
   filas del mismo `id_venta`.
-- Si una venta tiene datos conflictivos en clientes, el modelo no los evidencia.
+- Si una venta tiene datos conflictivos en clientes, el modelo no los evidencia
+  por si solo.
+- Ya existe el test singular `distintos_asesores` para detectar ventas con mas
+  de un asesor en `stg_reports__clientes`.
 
 ## `int_venta_persona`
 
@@ -277,8 +294,10 @@ Una fila por:
   fuentes usadas.
 - El grupo viene de un seed manual. Si aparece un nuevo desarrollo, `grupo` puede
   quedar nulo.
-- No tiene test `not_null` sobre `grupo`.
-- Depende de que `desarrollo_largo + unidad` este normalizado de forma estable.
+- No tiene test `not_null` obligatorio sobre `grupo`, pero existe la auditoria
+  warning `unidades_sin_grupo`.
+- Depende de que `desarrollo_largo + unidad` siga normalizado de forma estable
+  en staging.
 
 ## `dim_personas`
 
@@ -415,7 +434,8 @@ Una fila por:
 - Al usar `inner join` contra `fct_ventas`, excluye personas de ventas que no
   existen en la fact principal.
 - No incluye ventas canceladas.
-- Conviene auditar si cada venta tiene exactamente un `cliente_principal`.
+- Existe la auditoria warning `ventas_con_mas_de_un_cliente_principal` para
+  detectar ventas con cero o multiples clientes principales.
 
 ## Facts
 
@@ -472,12 +492,11 @@ Una fila por:
 
 - `venta_key`: `not_null`, `unique`
 - `id_venta`: `not_null`, `unique`
-- `unidad_key`: `not_null`
+- `unidad_key`: `not_null` y relationship hacia `dim_unidades.unidad_key`
 - expresion: `fecha_ultimo_pago_enganche >= fecha_primer_enganche`
 
 ### Riesgos o pendientes
 
-- No tiene relationship test de `unidad_key` hacia `dim_unidades`.
 - Depende de que `rp_vista_ventas` represente correctamente el universo de
   ventas que se quiere analizar.
 - Las ventas canceladas no estan incluidas en esta fact.
@@ -541,8 +560,10 @@ Una fila por movimiento de ingreso valido.
   con la misma referencia, monto y fechas, pero con `status_ingreso` `Activo` y
   `Cancelado`. Se conserva como dos movimientos operativos distintos al incluir
   estatus en `ingreso_key`.
-- Los marts que suman `fct_ingresos` cuentan tanto activos como cancelados
-  mientras no agreguen un filtro explicito por `status_ingreso`.
+- `fct_ingresos` conserva ingresos activos y cancelados. Los marts deben elegir
+  explicitamente si usan metricas brutas o solo `status_ingreso = 'Activo'`.
+  `mart_cobranza_por_venta` y el mart reconstruido experimental ya separan esas
+  metricas.
 - No hay test sobre `fecha_ingreso`, `id_venta` o `unidad_key`.
 
 ## `fct_facturas`
@@ -596,6 +617,8 @@ Una fila por factura, normalmente identificada por `uuid`.
   `uuid not_null`. Si UUID es obligatorio, el fallback casi no se usaria; si no
   es obligatorio, el test debe cambiar.
 - No existe relacion confiable con ventas, por eso se mantiene independiente.
+- Se conserva como soporte fiscal aislado y no debe usarse para analisis directo
+  de ventas o cobranza.
 
 ## `fct_pagos_vencidos`
 
@@ -731,13 +754,16 @@ Una fila por:
 - Usa `max(...)` para consolidar filas. Si hay datos conflictivos en cronograma,
   el modelo no los expone.
 - No fuerza relationship con `dim_unidades` ni con `fct_ventas`.
+- Pendiente a revisar: en `stg_reports__cronograma_unidades`,
+  `DESARROLLO_CORTO` se asigna a `desarrollo_largo` y `DESARROLLO_LARGO` se
+  asigna a `desarrollo_corto`.
 
 ## Tests actuales de warehouse
 
 La seleccion `path:models/warehouse` contiene:
 
 - 12 modelos;
-- 41 tests;
+- 43 tests;
 - 53 nodos totales procesados por `dbt compile` incluyendo modelos y tests.
 
 Modelos con tests declarados:
@@ -772,6 +798,33 @@ Por ahora no se fuerzan estas relaciones:
 Esto es correcto en el estado actual porque hay fuentes que pueden tener datos
 que no aparecen en `rp_vista_ventas`.
 
+### Auditorias de cobertura
+
+Las relaciones debiles no se fuerzan como tests obligatorios, pero se auditan en
+`analyses/cobertura_relaciones_debiles.sql`.
+
+La analysis mide:
+
+- `fct_ingresos -> fct_ventas`
+- `fct_pagos_vencidos -> fct_ventas`
+- `fct_cronograma_unidades -> dim_unidades`
+- `fct_facturas -> fct_ventas`, marcado como `sin_llave_confiable`
+
+Esto permite reportar cobertura sin convertir relaciones incompletas o
+conceptualmente debiles en fallas de build.
+
+Aclaracion: ingresos y pagos vencidos sin venta estan cubiertos por esta
+analysis, no por tests singulares separados.
+
+Ultima ejecucion observada:
+
+| Relacion | Total | Con relacion | Sin relacion | Cobertura |
+| --- | ---: | ---: | ---: | ---: |
+| `fct_ingresos -> fct_ventas` | 5000 | 5000 | 0 | 100.00% |
+| `fct_pagos_vencidos -> fct_ventas` | 4348 | 4348 | 0 | 100.00% |
+| `fct_cronograma_unidades -> dim_unidades` | 5000 | 3312 | 1688 | 66.24% |
+| `fct_facturas -> fct_ventas` | 5000 | n/a | n/a | n/a |
+
 ### Ventas canceladas fuera del warehouse principal
 
 Aunque staging ya tiene modelos de canceladas, warehouse todavia no los integra.
@@ -796,21 +849,48 @@ Varios modelos usan `max(...)` para deduplicar:
 - `dim_personas`
 - `fct_cronograma_unidades`
 
-Esto mantiene un grano claro, pero puede ocultar conflictos. A futuro conviene
-crear auditorias para detectar atributos multiples por llave.
+Esto mantiene un grano claro, pero puede ocultar conflictos. Existen auditorias
+singulares iniciales en `tests/singular/`:
+
+- `conflictos_unidades_atributos`
+- `conflictos_ventas_atributos`
+- `conflictos_persona_natural_key`
+- `conflictos_cronograma_unidades`
+- `distintos_asesores`
+- `unidades_sin_grupo`
+- `ventas_con_mas_de_un_cliente_principal`
+
+Verificacion con datos: `conflictos_persona_natural_key` devuelve filas en el
+estado actual. Hay personas naturales con multiples RFC o emails asociados, por
+lo que se debe decidir si se limpia la fuente, si se ajusta la llave natural o
+si este test queda temporalmente como advertencia.
+
+Decision actual: `conflictos_persona_natural_key` queda configurado con
+`severity='warn'`. Es una auditoria de calidad util para seguimiento, pero no
+debe bloquear el build mientras se resuelve la causa de fondo.
+
+Decision actual adicional: `unidades_sin_grupo` y
+`ventas_con_mas_de_un_cliente_principal` tambien quedan como warnings. Son
+auditorias nuevas de monitoreo para no bloquear el pipeline mientras se observa
+la calidad real de datos.
+
+El resto de tests mantiene severidad de error por defecto.
+
+Warnings esperados en `dbt build`: `conflictos_persona_natural_key`,
+`unidades_sin_grupo` y `ventas_con_mas_de_un_cliente_principal`.
 
 ## Problemas o gaps prioritarios
 
 1. Documentar y testear los tres modelos `int`.
-2. Agregar auditorias para detectar conflictos ocultos por `max(...)`.
-3. Revisar si `fct_ventas.unidad_key` debe tener relationship hacia
-   `dim_unidades.unidad_key`.
-4. Mantener sin relationship obligatorio ingresos/cartera/facturas/cronograma
+2. Mantener y ajustar auditorias singulares conforme se descubran nuevos
+   conflictos de calidad.
+3. Mantener sin relationship obligatorio ingresos/cartera/facturas/cronograma
    contra ventas hasta validar cobertura.
-5. Aclarar la decision sobre `uuid` obligatorio en facturacion.
-6. Auditar unidades sin `grupo`.
-7. Validar que `dim_date` cubre todo el rango temporal necesario.
-8. Modelar canceladas como subdominio separado si el negocio lo requiere.
+4. Aclarar si `uuid` debe seguir siendo obligatorio en facturacion.
+5. Mantener la auditoria de unidades sin `grupo` y actualizar el seed cuando
+   aparezcan desarrollos nuevos.
+6. Validar que `dim_date` cubre todo el rango temporal necesario.
+7. Modelar canceladas como subdominio separado si el negocio lo requiere.
 
 ## Verificacion realizada
 
@@ -827,7 +907,7 @@ Resultados:
 
 - `dbt parse` termino correctamente.
 - dbt detecto 12 modelos warehouse.
-- dbt detecto 41 tests asociados a warehouse.
+- dbt detecto 43 tests asociados a warehouse.
 - `dbt compile --select path:models/warehouse` termino correctamente con red
   habilitada.
 

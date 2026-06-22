@@ -1,4 +1,4 @@
-with pagos (
+with pagos as (
 
     select *
     from {{ ref('fct_pagos_vencidos') }}

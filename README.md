@@ -494,6 +494,33 @@ Métricas principales:
 
 ---
 
+### Gobernanza de marts
+
+Los marts se etiquetan segun su uso esperado:
+
+| Tag | Modelos | Uso |
+| --- | --- | --- |
+| `oficial` | `mart_dash_cron`, `mart_comercial_ventas`, `mart_cobranza_por_venta` | Consumo principal de negocio |
+| `soporte` | `mart_facturacion`, `mart_ingresos_por_periodo`, `mart_cartera_vencida_por_venta` | Analisis secundario o fiscal/financiero aislado |
+| `experimental` | `mart_dash_cron_reconstruido` | Reconciliacion futura, no reporte oficial |
+
+El mart oficial para reemplazar `tc_gl_Dash_Cron` es `mart_dash_cron`.
+`mart_dash_cron_reconstruido` no debe usarse como reporte oficial.
+
+### Matriz corta de metricas
+
+| Metrica | Definicion | Fuente | Escala |
+| --- | --- | --- | --- |
+| `total_ingresado` | Ingreso bruto, sin filtrar status | `fct_ingresos` | Moneda |
+| `total_ingresado_activo` | Ingresos con `status_ingreso = 'Activo'` | `fct_ingresos` | Moneda |
+| `total_cobrado` en `mart_dash_cron` | Metrica legacy del dashboard original | `stg_reports__dashboard_operaciones` | Moneda |
+| `total_cobrado` reconstruido | Suma de ingresos activos | `fct_ingresos` | Moneda |
+| `total_vencido` legacy | Metrica legacy del dashboard original | `stg_reports__dashboard_operaciones` | Moneda |
+| `total_vencido` reconstruido | Suma de pagos vencidos | `fct_pagos_vencidos` | Moneda |
+| `porcentaje_cobrado` | Total activo / precio de venta | Marts de cobranza | 0 a 100, 2 decimales |
+
+---
+
 ## 7. Decisiones clave de modelado
 
 Estas son algunas de las decisiones más importantes del proyecto.
@@ -511,6 +538,8 @@ fct_ventas ─── bridge_venta_persona ─── dim_personas
 ### 7.2 `fct_ingresos` no se fuerza contra `fct_ventas`
 
 Existen ingresos cuyo `id_venta` no aparece en la vista principal de ventas. Por eso se mantiene independencia en el warehouse y en algunos marts.
+
+La cobertura de relaciones debiles se audita con `analyses/cobertura_relaciones_debiles.sql`, sin convertir esas relaciones en tests obligatorios.
 
 ### 7.3 `fct_facturas` se mantiene independiente
 

@@ -88,6 +88,15 @@ todavia no forman parte del modelo principal:
 - `stg_reports__copropiedades_canceladas`
 - `stg_reports__flujo_ingresos_ventacancelada`
 
+## Verificacion de riesgos 2026-06-22
+
+Riesgo 1, normalizacion inconsistente de `unidad`: mitigado. Todos los staging
+que exponen `unidad` usan `trim(upper(UNIDAD))`.
+
+Riesgo 2, cast directo en fechas: mitigado para fechas. Las conversiones de
+fecha en staging usan `try_cast`; quedan casts directos no fecha para campos
+como `codigo_postal`, `monto_pagado` y algunos casos de `edad`.
+
 ## Resumen rapido
 
 | Modelo staging | Fuente | Uso downstream principal |
@@ -132,8 +141,9 @@ tambien participa en `dim_unidades`.
 
 ### Transformaciones importantes
 
-- Normaliza desarrollo largo/corto y equipo con `trim(upper(...))`.
-- Convierte fechas de enganche a `date`.
+- Normaliza desarrollo largo/corto, unidad, modelo y equipo con
+  `trim(upper(...))`.
+- Convierte fechas de enganche con `try_cast`.
 - Trata valores con texto `NULL` en `FECHAULTIMOPAGOENGANCHE`.
 
 ### Uso downstream
@@ -148,11 +158,6 @@ tambien participa en `dim_unidades`.
 
 ### Riesgos o pendientes
 
-- `unidad` se usa como `trim(UNIDAD)`, sin `upper`. Otros modelos como
-  dashboard, cronograma y cartera usan `trim(upper(UNIDAD))`. Esto puede afectar
-  joins por `unidad_key` si hay diferencias de mayusculas/minusculas.
-- `fecha_primer_enganche` usa `cast`, no `try_cast`. Si aparece una fecha
-  invalida, puede romper ejecucion.
 - Es importante validar con negocio si esta fuente representa todas las ventas o
   solo ventas vigentes/observadas.
 
@@ -242,7 +247,8 @@ Datos de persona:
   de una fila o porque se agregan atributos despues en `int_ventas_atributos`.
 - La correccion de edad solo cubre el caso conocido `CUARENTA Y DOS`. Si aparecen
   otros textos, `cast(trim(EDAD) as int)` puede fallar.
-- `unidad` no se normaliza con `trim(upper(...))`; se deja como `UNIDAD`.
+- `id_venta` no tiene test de unicidad porque este staging puede alimentar
+  agregaciones posteriores por venta.
 
 ## `stg_reports__copropiedades`
 
@@ -267,7 +273,8 @@ Las columnas distintivas son:
 
 ### Transformaciones importantes
 
-- Normaliza textos.
+- Normaliza textos, incluyendo `unidad` con `trim(upper(...))`.
+- Convierte fechas con `try_cast`.
 - Corrige `48 MEESES` a `48 MESES`.
 - Corrige `CUARENTA Y DOS` a `42`.
 - Corrige encoding de `LUGARNACIMIENTO`.
@@ -282,10 +289,8 @@ Las columnas distintivas son:
 
 ### Riesgos o pendientes
 
-- Usa varios `cast(... as date)` directos, a diferencia de `clientes`, que usa
-  mas `try_cast` con limpieza de `'NULL'`. Si raw trae valores invalidos, este
-  modelo es mas fragil.
-- `unidad` tampoco se normaliza de forma consistente con otros modelos.
+- La edad todavia usa `cast(trim(EDAD) as int)` despues de corregir el caso
+  conocido `CUARENTA Y DOS`; si aparecen otros textos, podria fallar.
 
 ## `stg_reports__flujo_ingresos`
 
@@ -321,9 +326,9 @@ Estandarizar movimientos de ingresos. Alimenta `fct_ingresos`.
 
 ### Transformaciones importantes
 
-- Normaliza desarrollo, cliente, banco y tercero con mayusculas.
+- Normaliza desarrollo, unidad, cliente, banco y tercero con mayusculas.
 - Usa `initcap` para `forma_pago`.
-- Convierte fechas de ingreso, amortizacion y captura a `date`.
+- Convierte fechas de ingreso, amortizacion y captura con `try_cast`.
 - Conserva `status_ingreso` y `status_venta` porque pueden distinguir filas
   que comparten folio, referencia, monto y fechas.
 
@@ -346,7 +351,6 @@ Estandarizar movimientos de ingresos. Alimenta `fct_ingresos`.
   misma referencia, monto y fechas, pero con `status_ingreso` distinto
   (`Activo` y `Cancelado`). Por eso el estatus forma parte de la llave en
   `fct_ingresos`.
-- Usa `cast` directo para fechas. Si aparece una fecha invalida, puede fallar.
 - La relacion con `fct_ventas` no debe forzarse todavia; hay ingresos que pueden
   no existir en `rp_vista_ventas`.
 
@@ -379,7 +383,7 @@ Estandarizar facturas emitidas desde `rp_facturas`.
 
 - Renombra columnas fiscales.
 - Normaliza razones sociales con `upper`.
-- Convierte `FECHA_TIMBRADO` a `date`.
+- Convierte `FECHA_TIMBRADO` con `try_cast`.
 
 ### Uso downstream
 
@@ -518,7 +522,8 @@ Estandarizar hitos del cronograma operativo de unidades.
 
 ### Tests actuales
 
-No tiene tests directos en staging.
+- `desarrollo_largo`: `not_null`
+- `unidad`: `not_null`
 
 ### Riesgos o pendientes
 
@@ -526,8 +531,6 @@ No tiene tests directos en staging.
   original, pero debe quedar documentada porque es facil confundirse.
 - No tiene `id_venta`; la relacion se hace por `desarrollo_largo + unidad` o
   `unidad_key`, que es mas debil que una llave de venta.
-- Conviene agregar tests para `desarrollo_largo` y `unidad` si se confirma que
-  son obligatorios.
 
 ## `stg_reports__cartera_vencida`
 
@@ -569,7 +572,9 @@ Estandarizar el detalle de pagos vencidos. Alimenta `fct_pagos_vencidos`.
 
 ### Tests actuales
 
-No tiene tests directos en staging.
+- `monto_vencido`: `not_null`
+- `fecha_pago`: `not_null`
+- `no_pago`: `not_null`
 
 ### Riesgos o pendientes
 
@@ -577,8 +582,6 @@ No tiene tests directos en staging.
   `id_venta` que no exista en `fct_ventas`.
 - Los datos de contacto no necesariamente deben conectarse a `dim_personas`; por
   ahora son texto informativo.
-- Conviene agregar tests basicos para `monto_vencido`, `fecha_pago` y `no_pago`
-  si se consideran obligatorios desde staging.
 
 ## `stg_reports__cliente_canceladas`
 
@@ -613,8 +616,8 @@ No tiene tests. Solo tiene tags:
 
 ### Riesgos o pendientes
 
-- Usa varios `cast(... as date)` directos, por lo que puede fallar con fechas
-  invalidas o textos tipo `'NULL'`.
+- Convierte fechas principales con `try_cast`; el modelo sigue separado hasta
+  disenar formalmente el subdominio de ventas canceladas.
 - Debe mantenerse separado hasta disenar formalmente el subdominio de ventas
   canceladas.
 
@@ -650,7 +653,8 @@ No tiene tests. Solo tiene tags:
 
 ### Riesgos o pendientes
 
-- Mismos riesgos de casteo directo que `stg_reports__copropiedades`.
+- Mismo pendiente de robustez que `stg_reports__copropiedades`: la edad usa
+  `cast(trim(EDAD) as int)` para valores no cubiertos por la correccion manual.
 - A futuro podria alimentar una tabla puente o dimension de personas para
   canceladas, pero todavia no esta integrado.
 
@@ -710,7 +714,7 @@ No tiene tests. Solo tiene tags:
 
 ## Tests actuales de staging
 
-La seleccion `path:models/staging` contiene 11 modelos y 10 tests.
+La seleccion `path:models/staging` contiene 11 modelos y 16 tests.
 
 Tests declarados:
 
@@ -722,11 +726,15 @@ Tests declarados:
 - `stg_reports__flujo_ingresos.monto_pagado`: `>= 0`
 - `stg_reports__facturas.uuid`: `not_null`, `unique`
 - `stg_reports__dashboard_operaciones.id_venta`: `not_null`, `unique`
+- `stg_reports__cronograma_unidades.desarrollo_largo`: `not_null`
+- `stg_reports__cronograma_unidades.unidad`: `not_null`
+- `stg_reports__cartera_vencida.monto_vencido`: `not_null`
+- `stg_reports__cartera_vencida.fecha_pago`: `not_null`
+- `stg_reports__cartera_vencida.no_pago`: `not_null`
+- test singular `distintos_asesores`
 
 Modelos sin tests directos:
 
-- `stg_reports__cartera_vencida`
-- `stg_reports__cronograma_unidades`
 - `stg_reports__cliente_canceladas`
 - `stg_reports__copropiedades_canceladas`
 - `stg_reports__flujo_ingresos_ventacancelada`
@@ -735,36 +743,22 @@ Modelos sin tests directos:
 
 ### Normalizacion de `unidad`
 
-Hay diferencias entre modelos:
+Verificacion 2026-06-22: los staging que exponen `unidad` ya usan la regla
+consistente `trim(upper(UNIDAD))`, incluyendo ventas, clientes, copropiedades,
+ingresos, dashboard, cronograma y cartera vencida.
 
-- `stg_reports__vista_ventas` usa `trim(UNIDAD)`.
-- `stg_reports__clientes` y copropiedades dejan `UNIDAD` casi directa.
-- `stg_reports__dashboard_operaciones`, `cronograma` y `cartera_vencida` usan
-  `trim(upper(UNIDAD))`.
-
-Como muchas llaves se construyen con `desarrollo_largo + unidad`, conviene
-decidir una regla unica para evitar joins fallidos.
+Esto mitiga el riesgo de joins silenciosamente fallidos en llaves construidas
+con `desarrollo_largo + unidad`.
 
 ### `cast` vs `try_cast`
 
-Algunos modelos ya usan `try_cast` para tolerar valores sucios:
+Verificacion 2026-06-22: las conversiones de fecha en staging ya usan
+`try_cast`. Esto reduce el riesgo de que un valor invalido de raw rompa el
+build completo.
 
-- `stg_reports__clientes`
-- `stg_reports__dashboard_operaciones`
-- `stg_reports__cronograma_unidades`
-- `stg_reports__cartera_vencida`
-
-Otros todavia usan `cast` directo en varias fechas:
-
-- `stg_reports__vista_ventas`
-- `stg_reports__copropiedades`
-- `stg_reports__cliente_canceladas`
-- `stg_reports__copropiedades_canceladas`
-- `stg_reports__flujo_ingresos`
-- `stg_reports__flujo_ingresos_ventacancelada`
-- `stg_reports__facturas`
-
-Si raw trae texto invalido, esos modelos pueden fallar en ejecucion.
+Quedan casts directos no relacionados con fechas, por ejemplo `codigo_postal`,
+`monto_pagado` y algunos campos de `edad`. Esos son pendientes de robustez
+distintos al riesgo original de fechas.
 
 ### Fuentes sin freshness
 
@@ -801,7 +795,7 @@ Resultados:
 - `dbt compile --select path:models/staging` termino correctamente.
 - dbt detecto 11 modelos staging.
 - dbt detecto 11 sources raw relacionadas con staging.
-- dbt detecto 10 tests asociados a staging.
+- dbt detecto 16 tests asociados a staging.
 
 Importante: `dbt compile` valida grafo, Jinja y compilacion, pero no ejecuta los
 modelos contra Databricks. Para validar datos reales, duplicados y errores de
@@ -809,14 +803,12 @@ conversion en runtime, hace falta correr `dbt build`.
 
 ## Prioridades recomendadas
 
-1. Definir una regla consistente para normalizar `unidad`.
-2. Cambiar casts fragiles de fechas a `try_cast` donde aplique.
-3. Documentar en YAML las columnas principales de cada staging.
-4. Agregar tests basicos para `stg_reports__cartera_vencida`.
-5. Agregar tests basicos para `stg_reports__cronograma_unidades`.
-6. Decidir si `uuid` de facturas es obligatorio o si el fallback de
+1. Documentar en YAML las columnas principales de cada staging.
+2. Decidir si `uuid` de facturas es obligatorio o si el fallback de
    `fct_facturas` deberia permitir nulos.
-7. Mantener canceladas como fase 2 hasta modelarlas como subdominio formal.
+3. Evaluar si los casts no fecha (`edad`, montos, codigos postales) deben
+   cambiar gradualmente a `try_cast`.
+4. Mantener canceladas como fase 2 hasta modelarlas como subdominio formal.
 
 ## Lectura recomendada
 

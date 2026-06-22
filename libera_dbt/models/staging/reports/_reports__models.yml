@@ -34,7 +34,20 @@ models:
               arguments:
                 expression: ">= 0"
 
+  - name: stg_reports__cronograma_unidades
+    columns:
+      - name: desarrollo_largo
+        data_tests:
+          - not_null
+      - name: unidad
+        data_tests:
+          - not_null
+
   - name: stg_reports__facturas
+
+    config:
+      tags: ['descontinuado']
+
     columns:
       - name: uuid
         data_tests:
@@ -47,6 +60,18 @@ models:
         data_tests:
           - not_null
           - unique
+
+  - name: stg_reports__cartera_vencida
+    columns:
+      - name: monto_vencido
+        data_tests:
+          - not_null
+      - name: fecha_pago
+        data_tests:
+          - not_null
+      - name: no_pago
+        data_tests:
+          - not_null
 
   - name: stg_reports__cliente_canceladas
     config:
