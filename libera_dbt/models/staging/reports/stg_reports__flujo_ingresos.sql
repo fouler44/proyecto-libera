@@ -13,8 +13,8 @@ renamed as (
         trim(STATUSINGRESO) as status_ingreso,
         trim(STATUSVENTA) as status_venta,
         trim(FOLIO) as folio,
-        cast(FECHA_INGRESO as date) as fecha_ingreso,
-        cast(FECHA_ARMOTIZACION as date) as fecha_amortizacion,
+        try_cast(FECHA_INGRESO as date) as fecha_ingreso,
+        try_cast(FECHA_ARMOTIZACION as date) as fecha_amortizacion,
         trim(upper(DESARROLLOLARGO)) as desarrollo_largo,
         trim(upper(DESARROLLOCORTO)) as desarrollo_corto,
         trim(UNIDAD) as unidad,
@@ -27,7 +27,7 @@ renamed as (
         MONTOPAGADO as monto_pagado,
         trim(upper(STATUS_TERCERO)) as status_tercero,
         trim(upper(NOMBRETERCERO)) as nombre_tercero,
-        cast(FECHA_CAPTURA as date) as fecha_captura
+        try_cast(FECHA_CAPTURA as date) as fecha_captura
 
     from source
 )

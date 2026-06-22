@@ -12,7 +12,7 @@ renamed as (
         id_venta,
         trim(upper(DESARROLLO_LARGO)) as desarrollo_largo,
         trim(upper(DESARROLLO_CORTO)) as desarrollo_corto,
-        trim(UNIDAD) as unidad,
+        trim(upper(UNIDAD)) as unidad,
         trim(upper(MODELO)) as modelo,
         trim(STATUSUNIDAD) as status_unidad,
         trim(upper(EQUIPO)) as equipo,
