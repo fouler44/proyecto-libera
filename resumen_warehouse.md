@@ -91,10 +91,12 @@ Riesgo 3, uso de `max(...)` para deduplicar: mitigado con auditorias
 singulares iniciales. Existen tests para detectar conflictos en:
 
 - unidades con mas de una etapa o desarrollo corto;
-- ventas con multiples atributos comerciales;
+- ventas con multiples atributos comerciales, incluido `status_escritura`;
 - misma `persona_natural_key` con multiples RFC/CURP/email;
 - cronograma con multiples fechas para la misma unidad;
-- asesores distintos por venta.
+- asesores distintos por venta;
+- unidades sin grupo proveniente del seed manual;
+- ventas sin exactamente un cliente principal.
 
 ## Modelos intermedios
 
@@ -292,7 +294,8 @@ Una fila por:
   fuentes usadas.
 - El grupo viene de un seed manual. Si aparece un nuevo desarrollo, `grupo` puede
   quedar nulo.
-- No tiene test `not_null` sobre `grupo`.
+- No tiene test `not_null` obligatorio sobre `grupo`, pero existe la auditoria
+  warning `unidades_sin_grupo`.
 - Depende de que `desarrollo_largo + unidad` siga normalizado de forma estable
   en staging.
 
@@ -431,7 +434,8 @@ Una fila por:
 - Al usar `inner join` contra `fct_ventas`, excluye personas de ventas que no
   existen en la fact principal.
 - No incluye ventas canceladas.
-- Conviene auditar si cada venta tiene exactamente un `cliente_principal`.
+- Existe la auditoria warning `ventas_con_mas_de_un_cliente_principal` para
+  detectar ventas con cero o multiples clientes principales.
 
 ## Facts
 
@@ -750,6 +754,9 @@ Una fila por:
 - Usa `max(...)` para consolidar filas. Si hay datos conflictivos en cronograma,
   el modelo no los expone.
 - No fuerza relationship con `dim_unidades` ni con `fct_ventas`.
+- Pendiente a revisar: en `stg_reports__cronograma_unidades`,
+  `DESARROLLO_CORTO` se asigna a `desarrollo_largo` y `DESARROLLO_LARGO` se
+  asigna a `desarrollo_corto`.
 
 ## Tests actuales de warehouse
 
@@ -791,6 +798,33 @@ Por ahora no se fuerzan estas relaciones:
 Esto es correcto en el estado actual porque hay fuentes que pueden tener datos
 que no aparecen en `rp_vista_ventas`.
 
+### Auditorias de cobertura
+
+Las relaciones debiles no se fuerzan como tests obligatorios, pero se auditan en
+`analyses/cobertura_relaciones_debiles.sql`.
+
+La analysis mide:
+
+- `fct_ingresos -> fct_ventas`
+- `fct_pagos_vencidos -> fct_ventas`
+- `fct_cronograma_unidades -> dim_unidades`
+- `fct_facturas -> fct_ventas`, marcado como `sin_llave_confiable`
+
+Esto permite reportar cobertura sin convertir relaciones incompletas o
+conceptualmente debiles en fallas de build.
+
+Aclaracion: ingresos y pagos vencidos sin venta estan cubiertos por esta
+analysis, no por tests singulares separados.
+
+Ultima ejecucion observada:
+
+| Relacion | Total | Con relacion | Sin relacion | Cobertura |
+| --- | ---: | ---: | ---: | ---: |
+| `fct_ingresos -> fct_ventas` | 5000 | 5000 | 0 | 100.00% |
+| `fct_pagos_vencidos -> fct_ventas` | 4348 | 4348 | 0 | 100.00% |
+| `fct_cronograma_unidades -> dim_unidades` | 5000 | 3312 | 1688 | 66.24% |
+| `fct_facturas -> fct_ventas` | 5000 | n/a | n/a | n/a |
+
 ### Ventas canceladas fuera del warehouse principal
 
 Aunque staging ya tiene modelos de canceladas, warehouse todavia no los integra.
@@ -823,11 +857,27 @@ singulares iniciales en `tests/singular/`:
 - `conflictos_persona_natural_key`
 - `conflictos_cronograma_unidades`
 - `distintos_asesores`
+- `unidades_sin_grupo`
+- `ventas_con_mas_de_un_cliente_principal`
 
 Verificacion con datos: `conflictos_persona_natural_key` devuelve filas en el
 estado actual. Hay personas naturales con multiples RFC o emails asociados, por
 lo que se debe decidir si se limpia la fuente, si se ajusta la llave natural o
 si este test queda temporalmente como advertencia.
+
+Decision actual: `conflictos_persona_natural_key` queda configurado con
+`severity='warn'`. Es una auditoria de calidad util para seguimiento, pero no
+debe bloquear el build mientras se resuelve la causa de fondo.
+
+Decision actual adicional: `unidades_sin_grupo` y
+`ventas_con_mas_de_un_cliente_principal` tambien quedan como warnings. Son
+auditorias nuevas de monitoreo para no bloquear el pipeline mientras se observa
+la calidad real de datos.
+
+El resto de tests mantiene severidad de error por defecto.
+
+Warnings esperados en `dbt build`: `conflictos_persona_natural_key`,
+`unidades_sin_grupo` y `ventas_con_mas_de_un_cliente_principal`.
 
 ## Problemas o gaps prioritarios
 
@@ -837,7 +887,8 @@ si este test queda temporalmente como advertencia.
 3. Mantener sin relationship obligatorio ingresos/cartera/facturas/cronograma
    contra ventas hasta validar cobertura.
 4. Aclarar si `uuid` debe seguir siendo obligatorio en facturacion.
-5. Auditar unidades sin `grupo`.
+5. Mantener la auditoria de unidades sin `grupo` y actualizar el seed cuando
+   aparezcan desarrollos nuevos.
 6. Validar que `dim_date` cubre todo el rango temporal necesario.
 7. Modelar canceladas como subdominio separado si el negocio lo requiere.
 

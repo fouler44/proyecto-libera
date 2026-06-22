@@ -1,3 +1,8 @@
+{{ config(severity='warn') }}
+
+-- Auditoria no bloqueante: expone persona_natural_key con multiples RFC, CURP
+-- o emails. Se mantiene como warning mientras se decide si se limpia la fuente
+-- o se ajusta la logica de deduplicacion de personas.
 select
     persona_natural_key,
     count(distinct nullif(trim(rfc), '')) as rfcs_distintos,

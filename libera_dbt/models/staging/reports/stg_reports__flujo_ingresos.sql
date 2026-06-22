@@ -24,7 +24,7 @@ renamed as (
         trim(initcap(FORMAPAGO)) as forma_pago,
         trim(CONCEPTO) as concepto,
         trim(REFERENCIAINGRESOS) as referencia_ingresos,
-        cast(MONTOPAGADO as decimal(10,2)) as monto_pagado,
+        try_cast(MONTOPAGADO as decimal(10,2)) as monto_pagado,
         trim(upper(STATUS_TERCERO)) as status_tercero,
         trim(upper(NOMBRETERCERO)) as nombre_tercero,
         try_cast(FECHA_CAPTURA as date) as fecha_captura

@@ -6,6 +6,7 @@ select
     count(distinct nullif(trim(etapa), '')) as etapas_distintas,
     count(distinct nullif(trim(asesor), '')) as asesores_distintos,
     count(distinct nullif(trim(status_venta), '')) as status_venta_distintos,
+    count(distinct nullif(trim(status_escritura), '')) as status_escritura_distintos,
     count(distinct nullif(trim(plan), '')) as planes_distintos,
     count(distinct enganche) as enganches_distintos,
     count(distinct financiamiento) as financiamientos_distintos,
@@ -19,6 +20,7 @@ having count(distinct nullif(trim(desarrollo_largo), '')) > 1
     or count(distinct nullif(trim(etapa), '')) > 1
     or count(distinct nullif(trim(asesor), '')) > 1
     or count(distinct nullif(trim(status_venta), '')) > 1
+    or count(distinct nullif(trim(status_escritura), '')) > 1
     or count(distinct nullif(trim(plan), '')) > 1
     or count(distinct enganche) > 1
     or count(distinct financiamiento) > 1

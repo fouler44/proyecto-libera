@@ -63,6 +63,42 @@ tratarse todavia como reemplazo directo del reporte legacy:
 | `mart_facturacion` | Aislado/descontinuado | 1 fila por factura/UUID | Soporte fiscal independiente, no conectado a ventas |
 | `mart_dash_cron_reconstruido` | Experimental | 1 fila por venta | Version futura reconstruida desde warehouse |
 
+## Gobernanza de uso
+
+Los marts tienen tags para orientar su uso:
+
+| Tag | Modelos | Uso esperado |
+| --- | --- | --- |
+| `oficial` | `mart_dash_cron`, `mart_comercial_ventas`, `mart_cobranza_por_venta` | Consumo principal de negocio |
+| `soporte` | `mart_facturacion`, `mart_ingresos_por_periodo`, `mart_cartera_vencida_por_venta` | Analisis secundario o fiscal/financiero aislado |
+| `experimental` | `mart_dash_cron_reconstruido` | Reconciliacion y laboratorio, no reporte oficial |
+
+El mart oficial para reemplazar `tc_gl_Dash_Cron` es `mart_dash_cron`.
+`mart_dash_cron_reconstruido` sirve para reconciliacion futura y puede diferir
+del reporte legacy.
+
+La analysis `comparacion_legacy_vs_reconstruido` compara metricas legacy de
+`mart_dash_cron` contra metricas recalculadas en `mart_dash_cron_reconstruido`.
+Es una herramienta de investigacion, no un test de aprobacion: las diferencias
+pueden ser esperadas mientras se expliquen.
+
+## Matriz de metricas
+
+| Metrica | Definicion oficial | Fuente | Incluye cancelados | Escala |
+| --- | --- | --- | --- | --- |
+| `total_ingresado` | Ingreso bruto relacionado a venta o periodo | `fct_ingresos` | Si, por compatibilidad | Moneda |
+| `total_ingresado_bruto` | Alias explicito del ingreso bruto | `fct_ingresos` | Si | Moneda |
+| `total_ingresado_activo` | Ingresos con `status_ingreso = 'Activo'` | `fct_ingresos` | No | Moneda |
+| `total_cobrado` en `mart_dash_cron` | Metrica legacy del dashboard original | `stg_reports__dashboard_operaciones` | Segun origen legacy | Moneda |
+| `total_cobrado` reconstruido | Suma de ingresos activos | `fct_ingresos` | No | Moneda |
+| `total_cobrado_bruto` reconstruido | Suma de ingresos sin filtrar status | `fct_ingresos` | Si | Moneda |
+| `total_vencido` en `mart_dash_cron` | Metrica legacy del dashboard original | `stg_reports__dashboard_operaciones` | Segun origen legacy | Moneda |
+| `total_vencido` reconstruido | Suma de pagos vencidos | `fct_pagos_vencidos` | No aplica | Moneda |
+| `saldo_total` | Metrica legacy del dashboard original | `stg_reports__dashboard_operaciones` | Segun origen legacy | Moneda |
+| `saldo_estimado` | `precio_venta - total_ingresado_activo` | `mart_cobranza_por_venta` | No | Moneda |
+| `saldo_total_estimado` | `precio_venta - total_cobrado` reconstruido | `mart_dash_cron_reconstruido` | No | Moneda |
+| `porcentaje_cobrado` | Total activo / precio de venta | Marts de cobranza | No aplica | 0 a 100, 2 decimales |
+
 ## Verificacion de riesgos 2026-06-22
 
 Riesgo 4, ingresos cancelados en metricas de cobranza: mitigado en los marts de
@@ -257,8 +293,9 @@ En `_mart__models.yml` tiene:
 
 - Si existieran varios registros con rol `cliente_principal` para una misma
   venta, el modelo usa `max(...)` y elegiria uno de forma silenciosa.
-- Conviene una auditoria futura para validar que cada venta tenga exactamente
-  un cliente principal.
+- La auditoria warning `ventas_con_mas_de_un_cliente_principal` valida que cada
+  venta tenga exactamente un cliente principal antes de esa seleccion con
+  `max(...)`.
 
 ## `mart_cobranza_por_venta`
 
@@ -612,6 +649,9 @@ Este modelo no es equivalente a `mart_dash_cron`.
 `mart_dash_cron_reconstruido` recalcula esas metricas desde facts. Por eso puede
 dar resultados distintos aunque ambos parezcan hablar del mismo dashboard.
 
+La analysis `comparacion_legacy_vs_reconstruido` existe para revisar esas
+diferencias venta por venta sin convertirlas en fallas de build.
+
 ### Tests actuales
 
 En `_mart__models.yml` tiene:
@@ -678,6 +718,12 @@ Resultados:
   habilitada.
 - dbt detecto 7 modelos en `models/marts`.
 - dbt detecto 40 tests asociados a la seleccion de marts.
+- En `dbt build`, `mart_cartera_vencida_por_venta` y
+  `mart_ingresos_por_periodo` tienen tests declarados y pasaron correctamente.
+- `comparacion_legacy_vs_reconstruido` es una analysis de reconciliacion, no un
+  test.
+- `mart_dash_cron_reconstruido` compilo y construyo correctamente en
+  `dbt build`, pero sigue siendo experimental.
 
 Importante: `dbt compile` valida grafo, Jinja y compilacion, pero no ejecuta los
 modelos contra Databricks. Para validar datos reales, duplicados y errores SQL en

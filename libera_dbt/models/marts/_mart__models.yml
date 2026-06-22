@@ -3,6 +3,8 @@ version: 2
 models:
   - name: mart_comercial_ventas
     description: Mart comercial con una fila por venta, enriquecido con unidad y cliente principal.
+    config:
+      tags: ['oficial']
     columns:
       - name: venta_key
         tests:
@@ -23,6 +25,8 @@ models:
       Mart de cobranza con venta, total ingresado y saldo estimado.
       Conserva total_ingresado como metrica bruta para compatibilidad, pero
       calcula saldo_estimado y porcentaje_cobrado con total_ingresado_activo.
+    config:
+      tags: ['oficial']
     columns:
       - name: venta_key
         tests:
@@ -60,6 +64,9 @@ models:
       desarrollo desde dim_unidades.
       Métrica proveniente del reporte operativo original. 
       Puede diferir de métricas reconstruidas desde fct_ingresos o fct_pagos_vencidos.
+
+    config:
+      tags: ['oficial']
 
     columns:
       - name: id_venta
@@ -100,6 +107,8 @@ models:
 
   - name: mart_cartera_vencida_por_venta
     description: Mart de soporte con cartera vencida agregada a nivel venta/unidad.
+    config:
+      tags: ['soporte']
     columns:
       - name: total_vencido
         tests:
@@ -119,6 +128,8 @@ models:
 
   - name: mart_ingresos_por_periodo
     description: Mart de soporte financiero con ingresos agregados por periodo y atributos operativos.
+    config:
+      tags: ['soporte']
     columns:
       - name: numero_movimientos
         tests:
@@ -151,7 +162,7 @@ models:
       cobranza.
 
     config:
-      tags: ['descontinuado']
+      tags: ['soporte', 'descontinuado']
 
     columns:
       - name: factura_key
