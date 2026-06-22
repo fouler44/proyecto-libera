@@ -73,7 +73,8 @@ ingresos_por_venta as (
     select
         venta_key,
 
-        sum(monto_pagado) as total_cobrado,
+        sum(monto_pagado) as total_cobrado_bruto,
+        sum(case when lower(status_ingreso) = 'activo' then monto_pagado end) as total_cobrado,
         count(*) as numero_movimientos_ingreso,
         min(fecha_ingreso) as fecha_primer_ingreso,
         max(fecha_ingreso) as fecha_ultimo_ingreso
@@ -184,6 +185,7 @@ final as (
         v.requiere_factura,
 
         -- Ingresos calculados desde fct_ingresos
+        coalesce(i.total_cobrado_bruto, 0) as total_cobrado_bruto,
         coalesce(i.total_cobrado, 0) as total_cobrado,
         coalesce(i.numero_movimientos_ingreso, 0) as numero_movimientos_ingreso,
         i.fecha_primer_ingreso,
@@ -202,7 +204,7 @@ final as (
 
         case
             when v.precio_venta is null or v.precio_venta = 0 then null
-            else coalesce(i.total_cobrado, 0) / v.precio_venta
+            else round(coalesce(i.total_cobrado, 0) / v.precio_venta * 100, 2)
         end as porcentaje_cobrado,
 
         case

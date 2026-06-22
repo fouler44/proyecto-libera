@@ -49,7 +49,7 @@ Son utiles, pero no son el centro del reemplazo del dashboard operativo:
 Este modelo intenta reconstruir metricas desde facts del warehouse. No debe
 tratarse todavia como reemplazo directo del reporte legacy:
 
-- `mart_dash_cron_reconstruido`
+- `experimental/mart_dash_cron_reconstruido`
 
 ## Resumen rapido
 
@@ -57,11 +57,33 @@ tratarse todavia como reemplazo directo del reporte legacy:
 | --- | --- | --- | --- |
 | `mart_dash_cron` | Principal fase 2 | 1 fila por venta/unidad del dashboard operativo | Reemplazar `tc_gl_Dash_Cron` de forma directa |
 | `mart_comercial_ventas` | Sano | 1 fila por venta | Analisis comercial de venta, unidad y cliente |
-| `mart_cobranza_por_venta` | Sano fase 1 | 1 fila por venta | Venta vs ingresos cobrados y saldo estimado |
-| `mart_cartera_vencida_por_venta` | Util, pero con error de sintaxis | 1 fila por venta con cartera vencida | Analisis agregado de pagos vencidos |
-| `mart_ingresos_por_periodo` | Util, falta documentacion/tests | 1 fila por periodo + atributos financieros | Ingresos por mes, banco, forma de pago, concepto |
-| `mart_facturacion` | Correcto, aislado | 1 fila por factura/UUID | Analisis fiscal y facturacion general |
+| `mart_cobranza_por_venta` | Sano fase 1 | 1 fila por venta | Venta vs ingresos cobrados, separando bruto y activo |
+| `mart_cartera_vencida_por_venta` | Soporte testeado | 1 fila por venta con cartera vencida | Analisis agregado de pagos vencidos |
+| `mart_ingresos_por_periodo` | Soporte testeado | 1 fila por periodo + atributos financieros | Ingresos por mes, banco, forma de pago, concepto |
+| `mart_facturacion` | Aislado/descontinuado | 1 fila por factura/UUID | Soporte fiscal independiente, no conectado a ventas |
 | `mart_dash_cron_reconstruido` | Experimental | 1 fila por venta | Version futura reconstruida desde warehouse |
+
+## Verificacion de riesgos 2026-06-22
+
+Riesgo 4, ingresos cancelados en metricas de cobranza: mitigado en los marts de
+cobranza. `mart_cobranza_por_venta` conserva `total_ingresado` y
+`total_ingresado_bruto` como metricas brutas, pero usa
+`total_ingresado_activo` para `saldo_estimado` y `porcentaje_cobrado`.
+`mart_dash_cron_reconstruido` conserva `total_cobrado_bruto` y usa
+`total_cobrado` filtrado a `status_ingreso = 'Activo'`.
+
+Riesgo 5, metricas legacy en `mart_dash_cron`: mitigado por documentacion. Las
+columnas `total_cobrado`, `saldo_total` y `total_vencido` estan documentadas en
+YAML como metricas legacy del reporte operativo original.
+
+Riesgo 6, confusion del mart reconstruido con el oficial: mitigado. El modelo
+vive en `models/marts/experimental/` y tiene tags `experimental` y
+`reconciliacion`.
+
+Riesgo 7, facturacion aislada: decidido y documentado. `mart_facturacion` y
+`fct_facturas` se conservan como soporte fiscal aislado; no existe llave
+confiable para relacionarlos con ventas y no deben usarse para analisis directo
+de ventas o cobranza.
 
 ## `mart_dash_cron`
 
@@ -147,11 +169,15 @@ Este mart no intenta recalcular `total_cobrado`, `saldo_total` o
 reproducir el dashboard operativo original con staging limpio y joins
 controlados.
 
+En `_mart__models.yml` esas tres columnas estan documentadas como metricas
+legacy del reporte operativo original para evitar compararlas directamente con
+metricas reconstruidas desde facts.
+
 ### Tests actuales
 
-En `_mart__models.yml` tiene tests `not_null` para:
+En `_mart__models.yml` tiene:
 
-- `id_venta`
+- `id_venta`: `not_null`, `unique`
 - `unidad_key`
 - `unidad`
 - `desarrollo_largo`
@@ -160,8 +186,6 @@ En `_mart__models.yml` tiene tests `not_null` para:
 
 ### Problemas o riesgos
 
-- No tiene test de unicidad para `id_venta`. Si el dashboard operativo debe ser
-  una fila por venta, conviene agregarlo.
 - Depende de que `stg_reports__dashboard_operaciones` ya venga deduplicado. En
   el build se observaron copias exactas para `id_venta` 2252 y 2263; si en el
   futuro aparecen duplicados con valores distintos, este mart heredara esa
@@ -262,14 +286,16 @@ Una fila por venta.
 1. Parte de `fct_ventas`.
 2. Agrega `fct_ingresos` por `venta_key` antes del join.
 3. Calcula:
-   - `total_ingresado`
+   - `total_ingresado`: ingreso bruto sin filtrar `status_ingreso`
+   - `total_ingresado_bruto`: alias explicito del ingreso bruto
+   - `total_ingresado_activo`: solo ingresos con `status_ingreso = 'Activo'`
    - `numero_movimientos_ingreso`
    - `fecha_primer_ingreso`
    - `fecha_ultimo_ingreso`
 4. Une la agregacion a ventas.
 5. Calcula:
-   - `saldo_estimado = precio_venta - total_ingresado`
-   - `porcentaje_cobrado = total_ingresado / precio_venta * 100`
+   - `saldo_estimado = precio_venta - total_ingresado_activo`
+   - `porcentaje_cobrado = total_ingresado_activo / precio_venta * 100`
 
 ### Columnas importantes
 
@@ -280,6 +306,8 @@ Una fila por venta.
 - fechas comerciales
 - `precio_venta`
 - `total_ingresado`
+- `total_ingresado_bruto`
+- `total_ingresado_activo`
 - `numero_movimientos_ingreso`
 - `fecha_primer_ingreso`
 - `fecha_ultimo_ingreso`
@@ -293,6 +321,8 @@ En `_mart__models.yml` tiene:
 - `venta_key`: `unique`, `not_null`
 - `id_venta`: `unique`, `not_null`
 - `total_ingresado`: `not_null`
+- `total_ingresado_bruto`: `not_null`
+- `total_ingresado_activo`: `not_null`
 - `saldo_estimado`: `not_null`
 
 ### Interpretacion
@@ -305,11 +335,11 @@ morosidad.
 
 - No incluye `fct_pagos_vencidos`.
 - Ignora ingresos cuyo `venta_key` sea `null`.
-- Suma todos los registros de `fct_ingresos` conectados a venta, sin filtrar
-  `status_ingreso`. Por ahora los movimientos `Cancelado` tambien afectan
-  `total_ingresado` hasta que se defina una regla de negocio distinta.
-- El porcentaje esta en escala 0 a 100. Esto es distinto a
-  `mart_dash_cron_reconstruido`, donde el porcentaje queda en escala 0 a 1.
+- Conserva `total_ingresado` como metrica bruta por compatibilidad. Para
+  analisis de saldo/cobranza se debe usar `total_ingresado_activo`, que excluye
+  movimientos con `status_ingreso` distinto de `Activo`.
+- El porcentaje esta en escala 0 a 100 con 2 decimales, alineado con
+  `mart_dash_cron_reconstruido`.
 
 ## `mart_cartera_vencida_por_venta`
 
@@ -362,30 +392,22 @@ En el SQL actual agrupa por:
 
 ### Tests actuales
 
-No esta documentado ni testeado en `_mart__models.yml`.
+En `_mart__models.yml` tiene:
+
+- combinacion unica de `venta_key`, `id_venta`, `unidad_key`
+- `total_vencido`: `not_null`
+- `numero_pagos_vencidos`: `not_null`
 
 ### Problemas actuales
 
-- Tiene un error de sintaxis: empieza con `with pagos (` y debe ser
-  `with pagos as (`.
 - Usa `v.equipo` desde `fct_ventas`, aunque `fct_pagos_vencidos` tambien trae
   `equipo`. Si una venta de cartera no existe en `fct_ventas`, `equipo` quedara
   nulo.
-- No tiene tests de unicidad ni no nulidad.
 
 ### Recomendacion
 
-Corregir la sintaxis y documentarlo como mart de soporte. No debe bloquear el
-reemplazo de `tc_gl_Dash_Cron`, pero si sera importante para analisis de
-morosidad.
-
-Tests sugeridos:
-
-- `venta_key`: `not_null` si se decide conservar solo cartera con venta
-  identificable.
-- combinacion unica de `venta_key`, `id_venta`, `unidad_key`.
-- `total_vencido`: `not_null`.
-- `numero_pagos_vencidos`: `not_null`.
+Mantenerlo como mart de soporte para analisis de morosidad. No debe bloquear el
+reemplazo de `tc_gl_Dash_Cron`.
 
 ## `mart_ingresos_por_periodo`
 
@@ -452,11 +474,16 @@ aparecer separado entre `Activo` y `Cancelado`.
 
 ### Tests actuales
 
-No esta documentado ni testeado en `_mart__models.yml`.
+En `_mart__models.yml` tiene:
+
+- combinacion unica de las columnas de agrupacion:
+  `year`, `month`, `month_name`, `desarrollo_largo`, `desarrollo_corto`,
+  `etapa`, `banco`, `forma_pago`, `concepto`, `status_ingreso`
+- `numero_movimientos`: `not_null`
+- `total_ingresado`: `not_null`
 
 ### Problemas o riesgos
 
-- No tiene llave surrogate.
 - Si `fecha_ingreso` no matchea con `dim_date`, `year`, `month` y `month_name`
   quedaran nulos.
 - Si `unidad_key` no matchea con `dim_unidades`, los campos de desarrollo
@@ -467,12 +494,9 @@ No esta documentado ni testeado en `_mart__models.yml`.
 
 ### Recomendacion
 
-Mantenerlo como mart de soporte financiero. Agregar documentacion y tests
-basicos, por ejemplo:
-
-- `numero_movimientos`: `not_null`.
-- `total_ingresado`: `not_null`.
-- una combinacion unica de las columnas de agrupacion, o una llave surrogate.
+Mantenerlo como mart de soporte financiero. Si empieza a consumirse de forma
+intensiva, podria agregarse una llave surrogate legible para facilitar joins
+externos.
 
 ## `mart_facturacion`
 
@@ -520,8 +544,10 @@ Una fila por factura/UUID.
 Este mart esta correctamente aislado. No se relaciona con ventas porque todavia
 no existe una llave confiable entre `fct_facturas` y `fct_ventas`.
 
-No debe usarse para analisis directo de ventas o cobranza hasta validar una
-relacion confiable.
+No debe usarse para analisis directo de ventas o cobranza.
+
+Esta etiquetado como `descontinuado` en YAML, pero la decision actual es
+conservarlo como soporte fiscal independiente.
 
 ### Tests actuales
 
@@ -534,9 +560,10 @@ En `_mart__models.yml` tiene:
 ### Problemas o riesgos
 
 - En `fct_facturas`, `factura_key` tiene una logica fallback cuando falta
-  `uuid`, pero los tests actuales obligan `uuid` `not_null`. Hay que decidir si
-  el UUID es realmente obligatorio o si se permitiran facturas sin UUID.
-- No tiene descripcion en `_mart__models.yml`.
+  `uuid`, pero los tests actuales obligan `uuid` `not_null`. Si se conserva UUID
+  obligatorio, el fallback queda como proteccion teorica y casi no se usaria.
+- Ya tiene descripcion en `_mart__models.yml` aclarando que es fiscal,
+  independiente y sin llave confiable hacia ventas.
 
 ## `mart_dash_cron_reconstruido`
 
@@ -544,6 +571,9 @@ En `_mart__models.yml` tiene:
 
 Intentar reconstruir el dashboard operativo desde modelos atomicos del
 warehouse, en lugar de partir del reporte operativo ya calculado.
+
+El archivo vive en `models/marts/experimental/` y el YAML lo etiqueta como
+`experimental` y `reconciliacion`.
 
 ### Modelos que consume
 
@@ -567,7 +597,8 @@ Una fila por venta.
 4. Agrega cartera vencida por venta desde `fct_pagos_vencidos`.
 5. Agrega cronograma por unidad desde `fct_cronograma_unidades`.
 6. Calcula metricas:
-   - `total_cobrado`
+   - `total_cobrado_bruto`
+   - `total_cobrado`: solo ingresos con `status_ingreso = 'Activo'`
    - `total_vencido`
    - `saldo_total_estimado`
    - `porcentaje_cobrado`
@@ -601,12 +632,12 @@ En `_mart__models.yml` tiene:
   hacer falta reagruparlo.
 - El filtro `where u.desarrollo_corto not in (...)` elimina ventas donde la
   unidad no haya matcheado y `u.desarrollo_corto` sea `null`.
-- `porcentaje_cobrado` queda en escala 0 a 1, mientras que
-  `mart_cobranza_por_venta` lo calcula en escala 0 a 100.
+- `porcentaje_cobrado` queda alineado con `mart_cobranza_por_venta`: escala
+  0 a 100 con 2 decimales.
 - Puede dejar fuera ingresos o cartera vencida que no conecten con ventas de
   `fct_ventas`.
-- Suma todos los ingresos conectados a venta, incluyendo `status_ingreso`
-  `Cancelado` mientras no exista un filtro explicito.
+- Conserva `total_cobrado_bruto` para reconciliacion, pero `total_cobrado`,
+  `saldo_total_estimado` y `porcentaje_cobrado` usan solo ingresos activos.
 
 ### Recomendacion
 
@@ -615,20 +646,19 @@ debe reemplazar todavia a `mart_dash_cron`.
 
 ## Tests actuales de marts
 
-La seleccion actual `path:models/marts` contiene 7 modelos y 31 tests.
+La seleccion actual `path:models/marts` contiene 7 modelos y 40 tests.
 
 Modelos con tests declarados:
 
 - `mart_comercial_ventas`
 - `mart_cobranza_por_venta`
 - `mart_dash_cron`
+- `mart_cartera_vencida_por_venta`
+- `mart_ingresos_por_periodo`
 - `mart_facturacion`
 - `mart_dash_cron_reconstruido`
 
-Modelos sin tests declarados:
-
-- `mart_cartera_vencida_por_venta`
-- `mart_ingresos_por_periodo`
+Todos los marts actuales tienen al menos tests basicos declarados.
 
 ## Verificacion realizada
 
@@ -647,7 +677,7 @@ Resultados:
 - `dbt compile --select path:models/marts` termino correctamente con red
   habilitada.
 - dbt detecto 7 modelos en `models/marts`.
-- dbt detecto 31 tests asociados a la seleccion de marts.
+- dbt detecto 40 tests asociados a la seleccion de marts.
 
 Importante: `dbt compile` valida grafo, Jinja y compilacion, pero no ejecuta los
 modelos contra Databricks. Para validar datos reales, duplicados y errores SQL en
@@ -655,14 +685,12 @@ ejecucion, hace falta correr `dbt build`.
 
 ## Problemas prioritarios a corregir
 
-1. Corregir la sintaxis de `mart_cartera_vencida_por_venta`.
-2. Documentar y testear `mart_cartera_vencida_por_venta`.
-3. Documentar y testear `mart_ingresos_por_periodo`.
-4. Decidir si `mart_dash_cron` debe tener `unique` en `id_venta`.
-5. Alinear la escala de `porcentaje_cobrado` entre marts.
-6. Aclarar en YAML que `mart_dash_cron_reconstruido` es experimental.
-7. Decidir si `uuid` en facturacion es obligatorio o si se permitiran facturas
+1. Mantener `mart_dash_cron_reconstruido` como experimental y no usarlo como
+   reporte oficial.
+2. Decidir si `uuid` en facturacion es obligatorio o si se permitiran facturas
    sin UUID usando el fallback de `factura_key`.
+3. Revisar si `mart_cartera_vencida_por_venta` debe traer `equipo` desde
+   `fct_pagos_vencidos` como fallback cuando no matchea con `fct_ventas`.
 
 ## Lectura recomendada
 
@@ -671,7 +699,7 @@ Para trabajar con esta capa sin confundirse:
 1. Usar `mart_dash_cron` para reemplazar el dashboard operativo legacy.
 2. Usar `mart_comercial_ventas` para preguntas comerciales por venta.
 3. Usar `mart_cobranza_por_venta` para venta vs ingresos cobrados.
-4. Usar `mart_cartera_vencida_por_venta` para morosidad, despues de corregirlo.
+4. Usar `mart_cartera_vencida_por_venta` para morosidad.
 5. Usar `mart_ingresos_por_periodo` para ingresos agregados por tiempo y
    atributos financieros.
 6. Usar `mart_facturacion` solo para facturacion general.

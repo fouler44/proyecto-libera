@@ -36,7 +36,7 @@ renamed as (
         trim(upper(APELLIDOMATERNO)) as apellido_materno,
         case
             when trim(EDAD) = 'CUARENTA Y DOS' then 42
-            else cast(trim(EDAD) as int)
+            else try_cast(trim(EDAD) as int)
         end as edad,
         trim(upper(
             decode(encode(LUGARNACIMIENTO, 'ISO-8859-1'), 'UTF-8')

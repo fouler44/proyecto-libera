@@ -16,7 +16,7 @@ renamed as (
         try_cast(FECHA_ARMOTIZACION as date) as fecha_amortizacion,
         trim(upper(DESARROLLOLARGO)) as desarrollo_largo,
         trim(upper(DESARROLLOCORTO)) as desarrollo_corto,
-        trim(UNIDAD) as unidad,
+        trim(upper(UNIDAD)) as unidad,
         trim(ETAPA) as etapa,
         trim(upper(CLIENTE)) as cliente,
         trim(upper(BANCO)) as banco,

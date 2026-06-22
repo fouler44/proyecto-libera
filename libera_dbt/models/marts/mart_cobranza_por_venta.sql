@@ -26,6 +26,7 @@ ingresos_por_venta as (
         venta_key,
 
         coalesce(sum(monto_pagado), 0) as total_ingresado,
+        coalesce(sum(case when lower(status_ingreso) = 'activo' then monto_pagado end), 0) as total_ingresado_activo,
         count(*) as numero_movimientos_ingreso,
         min(fecha_ingreso) as fecha_primer_ingreso,
         max(fecha_ingreso) as fecha_ultimo_ingreso
@@ -62,6 +63,8 @@ ventas_con_unidad as (
         v.precio_venta,
         
         coalesce(i.total_ingresado, 0) as total_ingresado,
+        coalesce(i.total_ingresado, 0) as total_ingresado_bruto,
+        coalesce(i.total_ingresado_activo, 0) as total_ingresado_activo,
         coalesce(i.numero_movimientos_ingreso, 0) as numero_movimientos_ingreso,
         i.fecha_primer_ingreso,
         i.fecha_ultimo_ingreso
@@ -81,11 +84,11 @@ metricas as (
     select
         *,
 
-        precio_venta - total_ingresado as saldo_estimado,
+        precio_venta - total_ingresado_activo as saldo_estimado,
 
         case
             when precio_venta > 0
-                then round(total_ingresado / precio_venta * 100, 2)
+                then round(total_ingresado_activo / precio_venta * 100, 2)
             else null
         end as porcentaje_cobrado
 

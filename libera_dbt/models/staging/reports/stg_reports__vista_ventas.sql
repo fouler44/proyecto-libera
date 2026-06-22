@@ -19,11 +19,8 @@ renamed as (
         trim(STATUSVENTA) as status_venta,
         trim(PLAN) as plan,
         PRECIOVENTA as precio_venta,
-        cast(FECHAPRIMERENGANCHE as date) as fecha_primer_enganche,
-        case
-            when FECHAULTIMOPAGOENGANCHE like '%NULL%' then null
-            else cast(FECHAULTIMOPAGOENGANCHE as date)
-        end as fecha_ultimo_pago_enganche
+        try_cast(FECHAPRIMERENGANCHE as date) as fecha_primer_enganche,
+        try_cast(nullif(trim(FECHAULTIMOPAGOENGANCHE), 'NULL') as date) as fecha_ultimo_pago_enganche
 
     from source
 )
