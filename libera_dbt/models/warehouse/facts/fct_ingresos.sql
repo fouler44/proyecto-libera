@@ -34,6 +34,8 @@ final as (
         {{ dbt_utils.generate_surrogate_key([
             'id_venta',
             'folio',
+            'status_ingreso',
+            'status_venta',
             'fecha_ingreso',
             'fecha_amortizacion',
             'fecha_captura',

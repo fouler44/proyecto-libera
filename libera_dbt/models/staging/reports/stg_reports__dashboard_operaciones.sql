@@ -43,6 +43,12 @@ renamed as (
         nullif(trim(upper(COMISIONLIBERA)), '') as comision_libera
 
     from source
+),
+
+deduplicated as (
+
+    select distinct *
+    from renamed
 )
 
-select * from renamed
+select * from deduplicated
