@@ -1,22 +1,22 @@
-WITH facturas AS (
+with facturas as (
 
-    SELECT * FROM {{ ref('stg_reports__facturas') }}
+    select * from {{ ref('stg_reports__facturas') }}
 
 ),
 
-final AS (
+final as (
 
-    SELECT
-        CASE
-            WHEN uuid IS NOT NULL AND uuid != ''
-                THEN {{ dbt_utils.generate_surrogate_key(['uuid']) }}
-            ELSE {{ dbt_utils.generate_surrogate_key([
+    select
+        case
+            when uuid is not null and uuid != ''
+                then {{ dbt_utils.generate_surrogate_key(['uuid']) }}
+            else {{ dbt_utils.generate_surrogate_key([
                 'folio_general',
                 'folio_seguimiento',
                 'fecha_timbrado',
                 'total_factura'
             ]) }}
-        END AS factura_key,
+        end as factura_key,
 
         uuid,
         uuid_relacionado,
@@ -31,8 +31,8 @@ final AS (
         tipo_pago,
         total_factura
 
-    FROM facturas
+    from facturas
 
 )
 
-SELECT * FROM final
+select * from final

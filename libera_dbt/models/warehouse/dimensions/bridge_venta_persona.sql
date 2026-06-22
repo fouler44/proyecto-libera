@@ -1,38 +1,38 @@
-WITH personas AS (
+with personas as (
 
-    SELECT *
-    FROM {{ ref('int_venta_persona') }}
+    select *
+    from {{ ref('int_venta_persona') }}
 
 ),
 
-ventas AS (
+ventas as (
 
-    SELECT
+    select
         venta_key,
         id_venta
-    FROM {{ ref('fct_ventas') }}
+    from {{ ref('fct_ventas') }}
 
 ),
 
-final AS (
+final as (
 
-    SELECT DISTINCT
+    select distinct
         v.venta_key,
 
         {{ dbt_utils.generate_surrogate_key([
             'p.persona_natural_key'
-        ]) }} AS persona_key,
+        ]) }} as persona_key,
 
         p.id_venta,
         p.rol_persona_en_venta
 
-    FROM personas p
-    INNER JOIN ventas v
-        ON p.id_venta = v.id_venta
+    from personas p
+    inner join ventas v
+        on p.id_venta = v.id_venta
 
-    WHERE p.id_venta IS NOT NULL
-      AND p.persona_natural_key IS NOT NULL
+    where p.id_venta is not null
+      and p.persona_natural_key is not null
 
 )
 
-SELECT * FROM final
+select * from final

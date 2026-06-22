@@ -1,37 +1,37 @@
-WITH
+with
 
-source AS (
+source as (
 
-    SELECT * FROM {{ source('raw', 'rp_flujo_ingresos_ventacancelada') }}
+    select * from {{ source('raw', 'rp_flujo_ingresos_ventacancelada') }}
 
 ),
 
-renamed AS (
+renamed as (
 
-    SELECT
-        TRIM(STATUSINGRESO) AS status_ingreso,
-        TRIM(STATUSVENTA) AS status_venta,
-        TRIM(FOLIO) AS folio,
-        CAST(FECHA_INGRESO AS DATE) AS fecha_ingreso,
-        CAST(FECHA_ARMOTIZACION AS DATE) AS fecha_amortizacion,
-        TRIM(UPPER(DESARROLLOLARGO)) AS desarrollo_largo,
-        TRIM(UPPER(DESARROLLOCORTO)) AS desarrollo_corto,
-        TRIM(UNIDAD) AS unidad,
-        TRIM(ETAPA) AS etapa,
-        TRIM(UPPER(CLIENTE)) AS cliente,
-        TRIM(UPPER(BANCO)) AS banco,
-        TRIM(INITCAP(FORMAPAGO)) AS forma_pago,
-        TRIM(CONCEPTO) AS concepto,
-        TRIM(REFERENCIAINGRESOS) AS referencia_ingresos,
-        MONTOPAGADO AS monto_pagado,
-        TRIM(UPPER(STATUS_TERCERO)) AS status_tercero,
-        TRIM(UPPER(NOMBRETERCERO)) AS nombre_tercero,
-        TRUE AS es_venta_cancelada
+    select
+        trim(STATUSINGRESO) as status_ingreso,
+        trim(STATUSVENTA) as status_venta,
+        trim(FOLIO) as folio,
+        cast(FECHA_INGRESO as date) as fecha_ingreso,
+        cast(FECHA_ARMOTIZACION as date) as fecha_amortizacion,
+        trim(upper(DESARROLLOLARGO)) as desarrollo_largo,
+        trim(upper(DESARROLLOCORTO)) as desarrollo_corto,
+        trim(UNIDAD) as unidad,
+        trim(ETAPA) as etapa,
+        trim(upper(CLIENTE)) as cliente,
+        trim(upper(BANCO)) as banco,
+        trim(initcap(FORMAPAGO)) as forma_pago,
+        trim(CONCEPTO) as concepto,
+        trim(REFERENCIAINGRESOS) as referencia_ingresos,
+        MONTOPAGADO as monto_pagado,
+        trim(upper(STATUS_TERCERO)) as status_tercero,
+        trim(upper(NOMBRETERCERO)) as nombre_tercero,
+        true as es_venta_cancelada
 
-    FROM source
+    from source
 )
 
-SELECT * FROM renamed
+select * from renamed
 
 
 -- NO TIENE NI venta_id NI FECHA_CAPTURA COMO SU VERSIÓN NO CANCELADA.

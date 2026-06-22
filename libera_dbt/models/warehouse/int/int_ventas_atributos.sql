@@ -1,37 +1,37 @@
-WITH ventas_atributos AS (
+with ventas_atributos as (
 
-    SELECT
+    select
         id_venta,
 
-        MAX(desarrollo_largo) AS desarrollo_largo,
-        MAX(desarrollo_corto) AS desarrollo_corto,
-        MAX(unidad) AS unidad,
-        MAX(etapa) AS etapa,
-        MAX(asesor) AS asesor,
-        MAX(status_venta) AS status_venta,
+        max(desarrollo_largo) as desarrollo_largo,
+        max(desarrollo_corto) as desarrollo_corto,
+        max(unidad) as unidad,
+        max(etapa) as etapa,
+        max(asesor) as asesor,
+        max(status_venta) as status_venta,
 
-        MAX(fecha_contrato) AS fecha_contrato,
-        MAX(fecha_firma_contrato) AS fecha_firma_contrato,
-        MAX(fecha_escritura) AS fecha_escritura,
-        MAX(fecha_prospectacion) AS fecha_prospectacion,
-        MAX(fecha_registro_venta) AS fecha_registro_venta,
-        MAX(fecha_aprobacion_jd) AS fecha_aprobacion_jd,
-        MAX(fecha_registro_carga_contrato) AS fecha_registro_carga_contrato,
+        max(fecha_contrato) as fecha_contrato,
+        max(fecha_firma_contrato) as fecha_firma_contrato,
+        max(fecha_escritura) as fecha_escritura,
+        max(fecha_prospectacion) as fecha_prospectacion,
+        max(fecha_registro_venta) as fecha_registro_venta,
+        max(fecha_aprobacion_jd) as fecha_aprobacion_jd,
+        max(fecha_registro_carga_contrato) as fecha_registro_carga_contrato,
 
-        MAX(plan) AS plan,
-        MAX(num_mensualidades) AS num_mensualidades,
-        MAX(precio_venta) AS precio_venta,
-        MAX(enganche) AS enganche,
-        MAX(financiamiento) AS financiamiento,
-        MAX(status_escritura) AS status_escritura,
-        MAX(valor_escritura) AS valor_escritura,
-        MAX(dia_pago) AS dia_pago,
-        MAX(entro_dv) AS entro_dv
+        max(plan) as plan,
+        max(num_mensualidades) as num_mensualidades,
+        max(precio_venta) as precio_venta,
+        max(enganche) as enganche,
+        max(financiamiento) as financiamiento,
+        max(status_escritura) as status_escritura,
+        max(valor_escritura) as valor_escritura,
+        max(dia_pago) as dia_pago,
+        max(entro_dv) as entro_dv
 
-    FROM {{ ref('stg_reports__clientes') }}
-    WHERE id_venta IS NOT NULL
-    GROUP BY id_venta
+    from {{ ref('stg_reports__clientes') }}
+    where id_venta is not null
+    group by id_venta
 
 )
 
-SELECT * FROM ventas_atributos
+select * from ventas_atributos

@@ -1,47 +1,54 @@
-WITH
+with
 
-source AS (
+source as (
 
-    SELECT * FROM {{ source('raw', 'rp_dashboard_operaciones') }}
+    select * from {{ source('raw', 'rp_dashboard_operaciones') }}
 
 ),
 
-renamed AS (
-    SELECT
+renamed as (
+    select
         id_venta,
-        TRIM(UPPER(EQUIPO)) AS equipo,
-        TRIM(UPPER(DESARROLLO_LARGO)) AS desarrollo_largo,
-        TRIM(UPPER(DESARROLLO_CORTO)) AS desarrollo_corto,
-        TRIM(UPPER(UNIDAD)) AS unidad,
-        TRIM(UPPER(MODELO)) AS modelo,
-        TRIM(UPPER(ETAPA)) AS etapa,
-        PRECIOLISTA AS precio_lista,
-        PRECIOM2 AS precio_m2,
-        TRIM(UPPER(ASESOR)) AS asesor,
-        TRIM(UPPER(STATUSUNIDAD)) AS status_unidad,
-        TRIM(UPPER(STATUSVENTA)) AS status_venta,
-        TRIM(UPPER(CLIENTE)) AS cliente,
-        TRIM(UPPER(CAMPANIA)) AS campania,
-        TRY_CAST(FECHADESTATUS AS DATE) AS fecha_de_status,
-        TRIM(PLAN) AS plan,
-        COALESCE(NUMEROMENSUALIDES, 0) AS numero_mensualidades,
-        COALESCE(NUMEROENGANCHES, 0) AS numero_enganches,
-        PRECIOVENTA AS precio_venta,
-        PRECIOM2V AS precio_m2_venta,
-        ENGANCHE AS enganche,
-        FINANCIAMIENTO AS financiamiento,
-        TOTAL_COBRADO AS total_cobrado,
-        SALDOTOTAL AS saldo_total,
-        TOTALVENCIDO AS total_vencido,
-        SIELTOTALCOBRADOESMENORQUEELENGANCHE AS enganche_incompleto,
-        REQUIERE_FACTURA AS requiere_factura,
-        TRY_CAST(FECHAPRIMERENGANCHE AS DATE) AS fecha_primer_enganche,
-        TRY_CAST(FECHAULTIMOPAGOENGANCHE AS DATE) AS fecha_ultimo_pago_enganche,
-        MONTODELPRIMERENGANCHE AS monto_primer_enganche,
-        NULLIF(TRIM(UPPER(COMISIONASESOR)), '') AS comision_asesor,
-        NULLIF(TRIM(UPPER(COMISIONLIBERA)), '') AS comision_libera
-    
-    FROM source
+        trim(upper(EQUIPO)) as equipo,
+        trim(upper(DESARROLLO_LARGO)) as desarrollo_largo,
+        trim(upper(DESARROLLO_CORTO)) as desarrollo_corto,
+        trim(upper(UNIDAD)) as unidad,
+        trim(upper(MODELO)) as modelo,
+        trim(upper(ETAPA)) as etapa,
+        PRECIOLISTA as precio_lista,
+        PRECIOM2 as precio_m2,
+        trim(upper(ASESOR)) as asesor,
+        trim(upper(STATUSUNIDAD)) as status_unidad,
+        trim(upper(STATUSVENTA)) as status_venta,
+        trim(upper(CLIENTE)) as cliente,
+        trim(upper(CAMPANIA)) as campania,
+        nullif(trim(upper(VENDEDOREXTERNO)), '') as vendedor_externo,
+        try_cast(FECHADESTATUS as date) as fecha_de_status,
+        trim(PLAN) as plan,
+        coalesce(NUMEROMENSUALIDES, 0) as numero_mensualidades,
+        coalesce(NUMEROENGANCHES, 0) as numero_enganches,
+        PRECIOVENTA as precio_venta,
+        PRECIOM2V as precio_m2_venta,
+        ENGANCHE as enganche,
+        FINANCIAMIENTO as financiamiento,
+        TOTAL_COBRADO as total_cobrado,
+        SALDOTOTAL as saldo_total,
+        TOTALVENCIDO as total_vencido,
+        SIELTOTALCOBRADOESMENORQUEELENGANCHE as enganche_incompleto,
+        REQUIERE_FACTURA as requiere_factura,
+        try_cast(FECHAPRIMERENGANCHE as date) as fecha_primer_enganche,
+        try_cast(FECHAULTIMOPAGOENGANCHE as date) as fecha_ultimo_pago_enganche,
+        MONTODELPRIMERENGANCHE as monto_primer_enganche,
+        nullif(trim(upper(COMISIONASESOR)), '') as comision_asesor,
+        nullif(trim(upper(COMISIONLIBERA)), '') as comision_libera
+
+    from source
+),
+
+deduplicated as (
+
+    select distinct *
+    from renamed
 )
 
-SELECT * FROM renamed
+select * from deduplicated

@@ -1,75 +1,75 @@
-WITH ventas AS (
+with ventas as (
 
-    SELECT *
-    FROM {{ ref('fct_ventas') }}
-
-),
-
-unidades AS (
-
-    SELECT *
-    FROM {{ ref('dim_unidades') }}
+    select *
+    from {{ ref('fct_ventas') }}
 
 ),
 
-venta_persona AS (
+unidades as (
 
-    SELECT *
-    FROM {{ ref('bridge_venta_persona') }}
-
-),
-
-personas AS (
-
-    SELECT *
-    FROM {{ ref('dim_personas') }}
+    select *
+    from {{ ref('dim_unidades') }}
 
 ),
 
-personas_por_venta AS (
+venta_persona as (
 
-    SELECT
+    select *
+    from {{ ref('bridge_venta_persona') }}
+
+),
+
+personas as (
+
+    select *
+    from {{ ref('dim_personas') }}
+
+),
+
+personas_por_venta as (
+
+    select
         vp.venta_key,
 
-        MAX(
-            CASE
-                WHEN vp.rol_persona_en_venta = 'cliente_principal'
-                    THEN p.nombre_completo
-            END
-        ) AS cliente_principal,
+        max(
+            case
+                when vp.rol_persona_en_venta = 'cliente_principal'
+                    then p.nombre_completo
+            end
+        ) as cliente_principal,
 
-        MAX(
-            CASE
-                WHEN vp.rol_persona_en_venta = 'cliente_principal'
-                    THEN p.email
-            END
-        ) AS email_cliente_principal,
+        max(
+            case
+                when vp.rol_persona_en_venta = 'cliente_principal'
+                    then p.email
+            end
+        ) as email_cliente_principal,
 
-        MAX(
-            CASE
-                WHEN vp.rol_persona_en_venta = 'cliente_principal'
-                    THEN p.telefono_celular
-            END
-        ) AS telefono_cliente_principal,
+        max(
+            case
+                when vp.rol_persona_en_venta = 'cliente_principal'
+                    then p.telefono_celular
+            end
+        ) as telefono_cliente_principal,
 
-        SUM(
-            CASE
-                WHEN vp.rol_persona_en_venta = 'copropietario'
-                    THEN 1
-                ELSE 0
-            END
-        ) AS numero_copropietarios
+        sum(
+            case
+                when vp.rol_persona_en_venta = 'copropietario'
+                    then 1
+                else 0
+            end
+        ) as numero_copropietarios
 
-    FROM venta_persona vp
-    LEFT JOIN personas p
-        ON vp.persona_key = p.persona_key
+    from venta_persona vp
+    left join personas p
+        on vp.persona_key = p.persona_key
 
-    GROUP BY
+    group by
         vp.venta_key
 
 )
 
-SELECT
+select
     v.venta_key,
     v.id_venta,
 
@@ -89,12 +89,12 @@ SELECT
     ppv.cliente_principal,
     ppv.email_cliente_principal,
     ppv.telefono_cliente_principal,
-    COALESCE(ppv.numero_copropietarios, 0) AS numero_copropietarios,
+    coalesce(ppv.numero_copropietarios, 0) as numero_copropietarios,
 
-    CASE
-        WHEN COALESCE(ppv.numero_copropietarios, 0) > 0 THEN true
-        ELSE false
-    END AS tiene_copropietarios,
+    case
+        when coalesce(ppv.numero_copropietarios, 0) > 0 then true
+        else false
+    end as tiene_copropietarios,
 
     v.fecha_contrato,
     v.fecha_firma_contrato,
@@ -112,10 +112,10 @@ SELECT
     v.dia_pago,
     v.entro_dv
 
-FROM ventas v
+from ventas v
 
-LEFT JOIN unidades u
-    ON v.unidad_key = u.unidad_key
+left join unidades u
+    on v.unidad_key = u.unidad_key
 
-LEFT JOIN personas_por_venta ppv
-    ON v.venta_key = ppv.venta_key
+left join personas_por_venta ppv
+    on v.venta_key = ppv.venta_key

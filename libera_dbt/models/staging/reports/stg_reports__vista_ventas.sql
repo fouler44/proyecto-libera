@@ -1,31 +1,31 @@
-WITH
+with
 
-source AS (
+source as (
 
-    SELECT * FROM {{ source('raw', 'rp_vista_ventas') }}
+    select * from {{ source('raw', 'rp_vista_ventas') }}
 
 ),
 
-renamed AS (
+renamed as (
 
-    SELECT
+    select
         id_venta,
-        TRIM(UPPER(DESARROLLO_LARGO)) AS desarrollo_largo,
-        TRIM(UPPER(DESARROLLO_CORTO)) AS desarrollo_corto,
-        TRIM(UNIDAD) AS unidad,
-        TRIM(UPPER(MODELO)) AS modelo,
-        TRIM(STATUSUNIDAD) AS status_unidad,
-        TRIM(UPPER(EQUIPO)) AS equipo,
-        TRIM(STATUSVENTA) AS status_venta,
-        TRIM(PLAN) AS plan,
-        PRECIOVENTA AS precio_venta,
-        CAST(FECHAPRIMERENGANCHE AS DATE) AS fecha_primer_enganche,
-        CASE
-            WHEN FECHAULTIMOPAGOENGANCHE LIKE '%NULL%' THEN NULL
-            ELSE CAST(FECHAULTIMOPAGOENGANCHE AS DATE)
-        END AS fecha_ultimo_pago_enganche
+        trim(upper(DESARROLLO_LARGO)) as desarrollo_largo,
+        trim(upper(DESARROLLO_CORTO)) as desarrollo_corto,
+        trim(UNIDAD) as unidad,
+        trim(upper(MODELO)) as modelo,
+        trim(STATUSUNIDAD) as status_unidad,
+        trim(upper(EQUIPO)) as equipo,
+        trim(STATUSVENTA) as status_venta,
+        trim(PLAN) as plan,
+        PRECIOVENTA as precio_venta,
+        cast(FECHAPRIMERENGANCHE as date) as fecha_primer_enganche,
+        case
+            when FECHAULTIMOPAGOENGANCHE like '%NULL%' then null
+            else cast(FECHAULTIMOPAGOENGANCHE as date)
+        end as fecha_ultimo_pago_enganche
 
-    FROM source
+    from source
 )
 
-SELECT * FROM renamed
+select * from renamed

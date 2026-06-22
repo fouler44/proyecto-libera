@@ -1,29 +1,32 @@
-WITH 
+with
 
-source AS (
+source as (
 
-    SELECT * FROM {{ source('raw', 'rp_cronograma_unidades') }}
-    
+    select * from {{ source('raw', 'rp_cronograma_unidades') }}
+
 ),
 
-renamed AS (
-    SELECT
-        TRIM(UPPER(EQUIPO)) AS equipo,
-        TRIM(UPPER(UNIDAD)) AS unidad,
-        TRIM(UPPER(DESARROLLO_CORTO)) AS desarrollo_largo,
-        TRIM(UPPER(DESARROLLO_LARGO)) AS desarrollo_corto,
-        TRIM(UPPER(ASESOR)) AS asesor,
-        TRIM(UPPER(CLIENTE)) AS cliente,
-        TRIM(UPPER(CAMPANIA)) AS campania,
-        TRY_CAST(RECHAZADO AS DATE) AS rechazado,
-        TRY_CAST(PROCESO AS DATE) AS proceso,
-        TRY_CAST(ESPERANDOAUTORIZACION AS DATE) AS esperando_autorizacion,
-        TRY_CAST(APROBADO_DIRECCION_VENTAS AS DATE) AS aprobado_direccion_ventas,
-        TRY_CAST(APROBADOJURIDICO AS DATE) AS aprobado_juridico,
-        TRY_CAST(FINALIZADO AS DATE) AS finalizado,
-        TRY_CAST(FINALIZADOYLIQUIDADO AS DATE) AS finalizado_liquidado
-    
-    FROM source
+renamed as (
+    select
+        trim(upper(EQUIPO)) as equipo,
+        
+        trim(upper(DESARROLLO_CORTO)) as desarrollo_largo,
+        trim(upper(DESARROLLO_LARGO)) as desarrollo_corto,
+        
+        trim(upper(UNIDAD)) as unidad,
+        trim(upper(ASESOR)) as asesor,
+        trim(upper(CLIENTE)) as cliente,
+        trim(upper(CAMPANIA)) as campania,
+        
+        try_cast(RECHAZADO as date) as rechazado,
+        try_cast(PROCESO as date) as proceso,
+        try_cast(ESPERANDOAUTORIZACION as date) as esperando_autorizacion,
+        try_cast(APROBADO_DIRECCION_VENTAS as date) as aprobado_direccion_ventas,
+        try_cast(APROBADOJURIDICO as date) as aprobado_juridico,
+        try_cast(FINALIZADO as date) as finalizado,
+        try_cast(FINALIZADOYLIQUIDADO as date) as finalizado_liquidado
+
+    from source
 )
 
-SELECT * FROM renamed
+select * from renamed

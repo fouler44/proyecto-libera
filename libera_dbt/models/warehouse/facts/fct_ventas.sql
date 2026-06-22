@@ -1,30 +1,41 @@
-WITH atributos AS (
-    SELECT * FROM {{ ref('int_ventas_atributos') }}
+with atributos as (
+    select * from {{ ref('int_ventas_atributos') }}
 ),
 
-ventas AS (
+ventas as (
 
-    SELECT * FROM {{ ref('stg_reports__vista_ventas') }}
+    select * from {{ ref('stg_reports__vista_ventas') }}
 
 ),
 
-final AS (
+dashboard as (
 
-    SELECT
+    select
+        id_venta,
+        precio_m2_venta,
+        requiere_factura
+    from {{ ref('stg_reports__dashboard_operaciones') }}
+    where id_venta is not null
+
+),
+
+final as (
+
+    select
         {{ dbt_utils.generate_surrogate_key([
             'v.id_venta'
-        ]) }} AS venta_key,
+        ]) }} as venta_key,
 
         v.id_venta,
 
         {{ dbt_utils.generate_surrogate_key([
             'v.desarrollo_largo',
             'v.unidad'
-        ]) }} AS unidad_key,
+        ]) }} as unidad_key,
 
         v.status_venta,
         v.status_unidad,
-        COALESCE(v.plan, a.plan) AS plan,
+        coalesce(v.plan, a.plan) as plan,
         v.equipo,
         a.asesor,
         a.status_escritura,
@@ -40,17 +51,20 @@ final AS (
         a.fecha_registro_carga_contrato,
 
         v.precio_venta,
+        d.precio_m2_venta,
         a.enganche,
         a.financiamiento,
         a.valor_escritura,
         a.num_mensualidades,
         a.dia_pago,
-        a.entro_dv
+        a.entro_dv,
+        d.requiere_factura
 
-    FROM ventas v
-    LEFT JOIN atributos a
-        ON v.id_venta = a.id_venta
-
+    from ventas v
+    left join atributos a
+        on v.id_venta = a.id_venta
+    left join dashboard d
+        on v.id_venta = d.id_venta
 )
 
-SELECT * FROM final
+select * from final
