@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 
@@ -7,12 +8,16 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "data"
-OUTPUT_FILE = OUTPUT_DIR / "ventas_por_desarrollo.json"
+SALES_OUTPUT_FILE = OUTPUT_DIR / "ventas_por_desarrollo.json"
+DASH_CRON_OUTPUT_FILE = OUTPUT_DIR / "dash_cron.json"
 
 RANGES = (
     (1, "\u00daltimo d\u00eda"),
     (7, "\u00daltimos 7 d\u00edas"),
     (30, "\u00daltimos 30 d\u00edas"),
+    (90, "\u00daltimos 3 meses"),
+    (180, "\u00daltimos 6 meses"),
+    (None, "Todo el tiempo"),
 )
 
 
@@ -34,7 +39,20 @@ def query_databricks(query: str) -> pd.DataFrame:
             return cursor.fetchall_arrow().to_pandas()
 
 
-def load_sales_by_desarrollo(catalog: str, schema: str, days: int, label: str) -> pd.DataFrame:
+def date_filter_clause(column_name: str, days: int | None) -> str:
+    if days is None:
+        return ""
+
+    return f"where {column_name} >= date_sub(current_date(), {int(days)})"
+
+
+def records(df: pd.DataFrame) -> list[dict]:
+    return json.loads(df.to_json(orient="records", force_ascii=False))
+
+
+def load_sales_by_desarrollo(catalog: str, schema: str, days: int | None, label: str) -> pd.DataFrame:
+    date_filter = date_filter_clause("fecha_registro_venta", days)
+
     ventas = query_databricks(f"""
         select
             desarrollo_corto as desarrollo,
@@ -42,7 +60,7 @@ def load_sales_by_desarrollo(catalog: str, schema: str, days: int, label: str) -
             sum(coalesce(precio_venta, 0)) as precio_venta_total,
             avg(precio_venta) as precio_venta_promedio
         from {catalog}.{schema}.mart_comercial_ventas
-        where fecha_registro_venta >= date_sub(current_date(), {int(days)})
+        {date_filter}
         group by desarrollo_corto
         order by total_ventas desc
     """)
@@ -52,11 +70,72 @@ def load_sales_by_desarrollo(catalog: str, schema: str, days: int, label: str) -
     return ventas
 
 
-def main() -> None:
-    load_dotenv()
+def load_dash_cron_kpis(catalog: str, schema: str, days: int | None) -> pd.DataFrame:
+    date_filter = date_filter_clause("fecha_de_status", days)
 
-    catalog = os.getenv("CATALOG")
-    schema = os.getenv("SCHEMA")
+    return query_databricks(f"""
+        select
+            count(id_venta) as total_ventas,
+            sum(coalesce(precio_venta, 0)) as precio_venta_total,
+            sum(coalesce(total_cobrado, 0)) as total_cobrado,
+            sum(coalesce(total_vencido, 0)) as total_vencido,
+            sum(coalesce(saldo_total, 0)) as saldo_total,
+            sum(
+                case
+                    when coalesce(total_vencido, 0) > 0 then 1
+                    else 0
+                end
+            ) as unidades_con_vencido
+        from {catalog}.{schema}.mart_dash_cron
+        {date_filter}
+    """)
+
+
+def load_dash_cron_counts(
+    catalog: str,
+    schema: str,
+    days: int | None,
+    column_name: str,
+    alias: str,
+    empty_label: str,
+) -> pd.DataFrame:
+    date_filter = date_filter_clause("fecha_de_status", days)
+
+    return query_databricks(f"""
+        select
+            coalesce(nullif({column_name}, ''), '{empty_label}') as {alias},
+            count(id_venta) as cantidad
+        from {catalog}.{schema}.mart_dash_cron
+        {date_filter}
+        group by 1
+        order by cantidad desc
+    """)
+
+
+def load_dash_cron_range(catalog: str, schema: str, days: int | None, label: str) -> dict:
+    kpis = records(load_dash_cron_kpis(catalog, schema, days))
+
+    return {
+        "rango_dias": days,
+        "rango_label": label,
+        "kpis": kpis[0] if kpis else {},
+        "status_unidad": records(
+            load_dash_cron_counts(catalog, schema, days, "status_unidad", "status_unidad", "SIN STATUS_UNIDAD")
+        ),
+        "status_venta": records(
+            load_dash_cron_counts(catalog, schema, days, "status_venta", "status_venta", "SIN STATUS_VENTA")
+        ),
+        "grupo": records(
+            load_dash_cron_counts(catalog, schema, days, "grupo", "grupo", "SIN GRUPO")
+        ),
+    }
+
+
+def main() -> None:
+    load_dotenv(BASE_DIR / ".env")
+
+    catalog = env("CATALOG", "analyticsgl")
+    schema = env("SCHEMA", "dev_aurbano")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -74,13 +153,31 @@ def main() -> None:
     )
 
     ventas.to_json(
-        OUTPUT_FILE,
+        SALES_OUTPUT_FILE,
         orient="records",
         force_ascii=False,
         indent=2,
     )
 
-    print(f"Wrote {len(ventas):,} rows to {OUTPUT_FILE}")
+    dash_cron = {
+        "ranges": [
+            load_dash_cron_range(
+                catalog=catalog,
+                schema=schema,
+                days=days,
+                label=label,
+            )
+            for days, label in RANGES
+        ]
+    }
+
+    DASH_CRON_OUTPUT_FILE.write_text(
+        json.dumps(dash_cron, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+    print(f"Wrote {len(ventas):,} rows to {SALES_OUTPUT_FILE}")
+    print(f"Wrote {len(dash_cron['ranges']):,} ranges to {DASH_CRON_OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

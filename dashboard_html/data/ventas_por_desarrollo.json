@@ -62,5 +62,445 @@
     "total_ventas":1,
     "precio_venta_total":428488.33,
     "precio_venta_promedio":428488.33
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"TOTEM",
+    "total_ventas":36,
+    "precio_venta_total":12870047.8100000005,
+    "precio_venta_promedio":357501.3280555556
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"CARBONERAS",
+    "total_ventas":18,
+    "precio_venta_total":2829469.7700000005,
+    "precio_venta_promedio":157192.765
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"TERUS",
+    "total_ventas":6,
+    "precio_venta_total":1131389.9199999999,
+    "precio_venta_promedio":188564.9866666667
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"NATIVA",
+    "total_ventas":6,
+    "precio_venta_total":3350576.4400000004,
+    "precio_venta_promedio":558429.4066666667
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"ALAMEDAS II",
+    "total_ventas":5,
+    "precio_venta_total":937094.51,
+    "precio_venta_promedio":187418.902
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"SANTAMAR",
+    "total_ventas":3,
+    "precio_venta_total":1195472.8700000001,
+    "precio_venta_promedio":398490.9566666667
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"TAPIRUS",
+    "total_ventas":2,
+    "precio_venta_total":281189.36,
+    "precio_venta_promedio":140594.68
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"ATELUS III",
+    "total_ventas":2,
+    "precio_venta_total":598995.1699999999,
+    "precio_venta_promedio":299497.585
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"STORAS",
+    "total_ventas":2,
+    "precio_venta_total":2800300.0,
+    "precio_venta_promedio":1400150.0
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"ALAMEDAS",
+    "total_ventas":1,
+    "precio_venta_total":440473.8,
+    "precio_venta_promedio":440473.8
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"ARENALES",
+    "total_ventas":1,
+    "precio_venta_total":800800.0,
+    "precio_venta_promedio":800800.0
+  },
+  {
+    "rango_dias":90,
+    "rango_label":"Últimos 3 meses",
+    "desarrollo":"CORALVIA",
+    "total_ventas":1,
+    "precio_venta_total":707000.0,
+    "precio_venta_promedio":707000.0
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"TOTEM",
+    "total_ventas":60,
+    "precio_venta_total":22215218.9400000088,
+    "precio_venta_promedio":370253.6490000002
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"CARBONERAS",
+    "total_ventas":27,
+    "precio_venta_total":4447565.1999999993,
+    "precio_venta_promedio":164724.637037037
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"NATIVA",
+    "total_ventas":9,
+    "precio_venta_total":4634371.5600000005,
+    "precio_venta_promedio":514930.1733333334
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"SANTAMAR",
+    "total_ventas":8,
+    "precio_venta_total":4234567.3700000001,
+    "precio_venta_promedio":529320.92125
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"ALAMEDAS II",
+    "total_ventas":7,
+    "precio_venta_total":1317314.51,
+    "precio_venta_promedio":188187.7871428572
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"TERUS",
+    "total_ventas":6,
+    "precio_venta_total":1131389.9199999999,
+    "precio_venta_promedio":188564.9866666667
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"STORAS",
+    "total_ventas":6,
+    "precio_venta_total":7827782.0,
+    "precio_venta_promedio":1304630.3333333333
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"ARENALES",
+    "total_ventas":4,
+    "precio_venta_total":3291200.0,
+    "precio_venta_promedio":822800.0
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"CORALVIA",
+    "total_ventas":3,
+    "precio_venta_total":2089392.26,
+    "precio_venta_promedio":696464.0866666667
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"ATELUS III",
+    "total_ventas":3,
+    "precio_venta_total":925795.1699999999,
+    "precio_venta_promedio":308598.39
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"ALAMEDAS",
+    "total_ventas":2,
+    "precio_venta_total":795398.6,
+    "precio_venta_promedio":397699.3
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"TAPIRUS",
+    "total_ventas":2,
+    "precio_venta_total":281189.36,
+    "precio_venta_promedio":140594.68
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"OCELOT",
+    "total_ventas":1,
+    "precio_venta_total":140000.0,
+    "precio_venta_promedio":140000.0
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"PARDAL I",
+    "total_ventas":1,
+    "precio_venta_total":402067.2,
+    "precio_venta_promedio":402067.2
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"XEXÉN Y XAKÁH",
+    "total_ventas":1,
+    "precio_venta_total":2638362.4500000002,
+    "precio_venta_promedio":2638362.4500000002
+  },
+  {
+    "rango_dias":180,
+    "rango_label":"Últimos 6 meses",
+    "desarrollo":"ATELUS I",
+    "total_ventas":1,
+    "precio_venta_total":335500.0,
+    "precio_venta_promedio":335500.0
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"CARBONERAS",
+    "total_ventas":1450,
+    "precio_venta_total":145530637.9299999774,
+    "precio_venta_promedio":100365.9571931034
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"SANTAMAR",
+    "total_ventas":938,
+    "precio_venta_total":385800181.0700003505,
+    "precio_venta_promedio":411300.8326972285
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"ARENALES",
+    "total_ventas":527,
+    "precio_venta_total":300581754.4599999189,
+    "precio_venta_promedio":570363.8604554078
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"OCELOT",
+    "total_ventas":363,
+    "precio_venta_total":72209990.6300000399,
+    "precio_venta_promedio":198925.5940220387
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"TAPIRUS (B)",
+    "total_ventas":264,
+    "precio_venta_total":45982893.3299999833,
+    "precio_venta_promedio":174177.6262499999
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"TERUS",
+    "total_ventas":199,
+    "precio_venta_total":38881692.7399999723,
+    "precio_venta_promedio":195385.3906532662
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"TAPIRUS",
+    "total_ventas":189,
+    "precio_venta_total":30059228.9999999776,
+    "precio_venta_promedio":159043.5396825396
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"ATELUS III",
+    "total_ventas":130,
+    "precio_venta_total":44785530.090000011,
+    "precio_venta_promedio":344504.0776153847
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"ATELUS I",
+    "total_ventas":106,
+    "precio_venta_total":34343120.9899999946,
+    "precio_venta_promedio":323991.7074528302
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"ATELUS II",
+    "total_ventas":98,
+    "precio_venta_total":40202087.0,
+    "precio_venta_promedio":410225.3775510204
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"PARDAL I",
+    "total_ventas":95,
+    "precio_venta_total":44495417.4299999997,
+    "precio_venta_promedio":468372.8150526316
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"TOTEM",
+    "total_ventas":94,
+    "precio_venta_total":38638434.5900000036,
+    "precio_venta_promedio":411047.1764893617
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"ALAMEDAS",
+    "total_ventas":91,
+    "precio_venta_total":37106616.1799999923,
+    "precio_venta_promedio":407765.0129670329
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"STORAS",
+    "total_ventas":91,
+    "precio_venta_total":78921468.0500000119,
+    "precio_venta_promedio":867268.8796703299
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"TAPIRUS III MIRADOR",
+    "total_ventas":82,
+    "precio_venta_total":23342657.7600000016,
+    "precio_venta_promedio":284666.5580487805
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"ALAMEDAS II",
+    "total_ventas":79,
+    "precio_venta_total":17816730.3200000003,
+    "precio_venta_promedio":225528.2318987342
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"TAPIRUS III",
+    "total_ventas":63,
+    "precio_venta_total":17886007.5999999978,
+    "precio_venta_promedio":283904.8825396825
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"CORALVIA",
+    "total_ventas":34,
+    "precio_venta_total":26392687.5999999978,
+    "precio_venta_promedio":776255.5176470587
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"PARDAL III",
+    "total_ventas":27,
+    "precio_venta_total":14734518.1099999975,
+    "precio_venta_promedio":545722.8929629629
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"NATIVA",
+    "total_ventas":24,
+    "precio_venta_total":13469251.0399999991,
+    "precio_venta_promedio":561218.7933333333
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"KANTARA",
+    "total_ventas":15,
+    "precio_venta_total":13587600.0,
+    "precio_venta_promedio":905840.0
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"PUNTA MAYA",
+    "total_ventas":13,
+    "precio_venta_total":2128500.0,
+    "precio_venta_promedio":163730.7692307692
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"GRUPO LIBERA",
+    "total_ventas":12,
+    "precio_venta_total":959200.0,
+    "precio_venta_promedio":79933.3333333333
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"XEXÉN Y XAKÁH",
+    "total_ventas":11,
+    "precio_venta_total":37782559.4600000009,
+    "precio_venta_promedio":3434778.1327272728
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"XOMAK",
+    "total_ventas":2,
+    "precio_venta_total":6062922.1200000001,
+    "precio_venta_promedio":3031461.0600000001
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"CASA TOA",
+    "total_ventas":2,
+    "precio_venta_total":10711350.0099999998,
+    "precio_venta_promedio":5355675.0049999999
+  },
+  {
+    "rango_dias":null,
+    "rango_label":"Todo el tiempo",
+    "desarrollo":"NASUA AZUL",
+    "total_ventas":1,
+    "precio_venta_total":340000.0,
+    "precio_venta_promedio":340000.0
   }
 ]

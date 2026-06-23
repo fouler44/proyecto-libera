@@ -62,7 +62,6 @@ ventas_con_unidad as (
 
         v.precio_venta,
         
-        coalesce(i.total_ingresado, 0) as total_ingresado,
         coalesce(i.total_ingresado, 0) as total_ingresado_bruto,
         coalesce(i.total_ingresado_activo, 0) as total_ingresado_activo,
         coalesce(i.numero_movimientos_ingreso, 0) as numero_movimientos_ingreso,
