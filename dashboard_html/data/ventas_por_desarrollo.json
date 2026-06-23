@@ -1,0 +1,66 @@
+[
+  {
+    "rango_dias":7,
+    "rango_label":"Últimos 7 días",
+    "desarrollo":"CARBONERAS",
+    "total_ventas":1,
+    "precio_venta_total":156899.47,
+    "precio_venta_promedio":156899.47
+  },
+  {
+    "rango_dias":7,
+    "rango_label":"Últimos 7 días",
+    "desarrollo":"NATIVA",
+    "total_ventas":1,
+    "precio_venta_total":428488.33,
+    "precio_venta_promedio":428488.33
+  },
+  {
+    "rango_dias":30,
+    "rango_label":"Últimos 30 días",
+    "desarrollo":"TOTEM",
+    "total_ventas":17,
+    "precio_venta_total":6273064.3200000003,
+    "precio_venta_promedio":369003.7835294118
+  },
+  {
+    "rango_dias":30,
+    "rango_label":"Últimos 30 días",
+    "desarrollo":"TERUS",
+    "total_ventas":6,
+    "precio_venta_total":1131389.9199999999,
+    "precio_venta_promedio":188564.9866666667
+  },
+  {
+    "rango_dias":30,
+    "rango_label":"Últimos 30 días",
+    "desarrollo":"CARBONERAS",
+    "total_ventas":5,
+    "precio_venta_total":658128.3099999999,
+    "precio_venta_promedio":131625.662
+  },
+  {
+    "rango_dias":30,
+    "rango_label":"Últimos 30 días",
+    "desarrollo":"TAPIRUS",
+    "total_ventas":2,
+    "precio_venta_total":281189.36,
+    "precio_venta_promedio":140594.68
+  },
+  {
+    "rango_dias":30,
+    "rango_label":"Últimos 30 días",
+    "desarrollo":"SANTAMAR",
+    "total_ventas":1,
+    "precio_venta_total":243214.63,
+    "precio_venta_promedio":243214.63
+  },
+  {
+    "rango_dias":30,
+    "rango_label":"Últimos 30 días",
+    "desarrollo":"NATIVA",
+    "total_ventas":1,
+    "precio_venta_total":428488.33,
+    "precio_venta_promedio":428488.33
+  }
+]

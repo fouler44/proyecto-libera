@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard Operaciones Libera</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/app.js" defer></script>
+  </head>
+  <body data-theme="dark">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Filtros">
+        <h2>Filtros</h2>
+
+        <form class="filters" id="filters">
+          <div class="filter-field">
+            <label for="rangeDays">Rango de tiempo</label>
+            <div class="select-wrap">
+              <select id="rangeDays" name="rangeDays">
+                <option value="1">&Uacute;ltimo d&iacute;a</option>
+                <option value="7">&Uacute;ltimos 7 d&iacute;as</option>
+                <option value="30" selected>&Uacute;ltimos 30 d&iacute;as</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-field">
+            <label for="minVentas">M&iacute;nimo de ventas por desarrollo</label>
+            <div class="stepper">
+              <input
+                id="minVentas"
+                name="minVentas"
+                type="number"
+                min="0"
+                step="1"
+                value="0"
+                inputmode="numeric"
+              >
+              <button type="button" class="stepper-button" id="decrementMin" aria-label="Disminuir m&iacute;nimo">-</button>
+              <button type="button" class="stepper-button" id="incrementMin" aria-label="Aumentar m&iacute;nimo">+</button>
+            </div>
+          </div>
+        </form>
+
+      </aside>
+
+      <main class="dashboard">
+        <div class="top-actions">
+          <button type="button" class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+            <span class="theme-toggle-icon" aria-hidden="true">&#9728;</span>
+            <span id="themeToggleText">Modo claro</span>
+          </button>
+        </div>
+
+        <header class="hero">
+          <h1><span aria-hidden="true">&#127793;</span> Dashboard Operaciones Libera</h1>
+          <p>Este dashboard consume los modelos anal&iacute;ticos construidos con dbt sobre Databricks.</p>
+        </header>
+
+        <section class="metrics" aria-label="Indicadores principales">
+          <article class="metric">
+            <span>Desarrollos</span>
+            <strong id="kpiDevelopments">0</strong>
+          </article>
+          <article class="metric">
+            <span>Total ventas</span>
+            <strong id="kpiSales">0</strong>
+          </article>
+          <article class="metric">
+            <span>Precio venta total</span>
+            <strong id="kpiRevenue">$0.00</strong>
+          </article>
+        </section>
+
+        <section class="notice" id="notice" aria-live="polite" hidden></section>
+
+        <section class="chart-section" aria-labelledby="chartTitle">
+          <div class="section-header">
+            <h2 id="chartTitle">Ventas por desarrollo</h2>
+            <span id="snapshotLabel">Snapshot local</span>
+          </div>
+          <div class="chart-shell">
+            <div class="chart" id="chart"></div>
+          </div>
+        </section>
+
+        <section class="detail-section" aria-labelledby="tableTitle">
+          <div class="section-header">
+            <h2 id="tableTitle">Detalle</h2>
+            <span id="chartSummary">0 desarrollos</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Desarrollo</th>
+                  <th scope="col">Ventas</th>
+                  <th scope="col">Precio venta total</th>
+                  <th scope="col">Precio venta promedio</th>
+                </tr>
+              </thead>
+              <tbody id="detailTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
