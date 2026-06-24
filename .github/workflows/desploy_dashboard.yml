@@ -1,0 +1,59 @@
+name: Deploy dashboard to Cloudflare Pages
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    # Corre diario. GitHub Actions usa UTC por defecto.
+    # Ajusta la hora según cuando tus marts ya estén actualizados.
+    - cron: "37 13 * * *"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      contents: read
+      deployments: write
+
+    env:
+      CATALOG: ${{ secrets.CATALOG }}
+      SCHEMA: ${{ secrets.SCHEMA }}
+      DATABRICKS_SERVER_HOSTNAME: ${{ secrets.DATABRICKS_SERVER_HOSTNAME }}
+      DATABRICKS_HTTP_PATH: ${{ secrets.DATABRICKS_HTTP_PATH }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r dashboard_html/requirements.txt
+
+      - name: Export dashboard data from Databricks
+        run: |
+          python dashboard_html/export_data.py
+
+      - name: Verify generated files
+        run: |
+          test -f dashboard_html/index.html
+          test -f dashboard_html/css/styles.css
+          test -f dashboard_html/js/app.js
+          test -f dashboard_html/data/ventas_por_desarrollo.json
+          test -f dashboard_html/data/dash_cron.json
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dashboard_html --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

@@ -38,7 +38,7 @@ renamed as (
             nullif(nullif(trim(FECHAESCRITURA), 'NULL'), '')
             as date
         ) as fecha_escritura,
-        VALORESCRITURA as valor_escritura,
+        nullif(VALORESCRITURA, 'NULL') as valor_escritura,
         DIAPAGO as dia_pago,
         trim(upper(NOMBRECLIENTE)) as nombre_cliente,
         trim(upper(APELLIDOPATERNO)) as apellido_paterno,
