@@ -465,14 +465,19 @@ function renderChart(rows) {
   }
 
   const maxVentas = getNiceMax(Math.max(...rows.map((row) => row.totalVentas), 1));
-  const chartWidth = Math.max(780, rows.length * 128 + 72);
+  const barCount = Math.max(rows.length, 1);
+  const isDense = barCount > 20;
+  const isCompact = barCount > 12;
   const canvas = document.createElement("div");
   const yAxis = document.createElement("div");
   const plotArea = document.createElement("div");
   const bars = document.createElement("div");
 
   canvas.className = "chart-canvas";
-  canvas.style.setProperty("--chart-width", `${chartWidth}px`);
+  canvas.style.setProperty("--bar-count", `${barCount}`);
+  canvas.style.setProperty("--bar-gap", isDense ? "8px" : isCompact ? "16px" : "42px");
+  canvas.style.setProperty("--bar-max-width", isDense ? "48px" : isCompact ? "72px" : "110px");
+  canvas.style.setProperty("--x-label-size", isDense ? "0.64rem" : isCompact ? "0.7rem" : "0.76rem");
   yAxis.className = "y-axis";
   plotArea.className = "plot-area";
   bars.className = "bars";
@@ -825,6 +830,27 @@ if (false) {
     };
   }
 
+  function isDashRangeEmpty(range) {
+    if (!range) {
+      return true;
+    }
+
+    const kpis = range.kpis || {};
+    const totalKpis =
+      toNumber(kpis.total_ventas) +
+      toNumber(kpis.precio_venta_total) +
+      toNumber(kpis.total_cobrado) +
+      toNumber(kpis.total_vencido) +
+      toNumber(kpis.saldo_total) +
+      toNumber(kpis.unidades_con_vencido);
+    const totalCounts = [...range.statusUnidad, ...range.statusVenta, ...range.grupo].reduce(
+      (sum, row) => sum + toNumber(row.cantidad),
+      0
+    );
+
+    return totalKpis === 0 && totalCounts === 0;
+  }
+
   async function fetchJson(url, fallback) {
     const response = await fetch(url, { cache: "no-store" });
     return response.ok ? response.json() : fallback;
@@ -895,14 +921,19 @@ if (false) {
     view.chartSummary.textContent = `${numberFormatter.format(rows.length)} desarrollos`;
 
     const maxVentas = getNiceMax(Math.max(...rows.map((row) => row.totalVentas), 1));
-    const chartWidth = Math.max(780, rows.length * 128 + 72);
+    const barCount = Math.max(rows.length, 1);
+    const isDense = barCount > 20;
+    const isCompact = barCount > 12;
     const canvas = document.createElement("div");
     const yAxis = document.createElement("div");
     const plotArea = document.createElement("div");
     const bars = document.createElement("div");
 
     canvas.className = "chart-canvas";
-    canvas.style.setProperty("--chart-width", `${chartWidth}px`);
+    canvas.style.setProperty("--bar-count", `${barCount}`);
+    canvas.style.setProperty("--bar-gap", isDense ? "8px" : isCompact ? "16px" : "42px");
+    canvas.style.setProperty("--bar-max-width", isDense ? "48px" : isCompact ? "72px" : "110px");
+    canvas.style.setProperty("--x-label-size", isDense ? "0.64rem" : isCompact ? "0.7rem" : "0.76rem");
     yAxis.className = "y-axis";
     plotArea.className = "plot-area";
     bars.className = "bars";
@@ -978,6 +1009,7 @@ if (false) {
 
   function renderMiniBars(container, rows) {
     container.replaceChildren();
+    container.classList.remove("is-dense");
 
     if (rows.length === 0) {
       const empty = document.createElement("p");
@@ -987,33 +1019,65 @@ if (false) {
       return;
     }
 
-    const maxCantidad = Math.max(...rows.map((row) => row.cantidad), 1);
+    const maxCantidad = getNiceMax(Math.max(...rows.map((row) => row.cantidad), 1));
+    const ticks = getTicks(maxCantidad);
+    const barCount = Math.max(rows.length, 1);
+    const frame = document.createElement("div");
+    const axis = document.createElement("div");
+    const plot = document.createElement("div");
+    const valueArea = document.createElement("div");
     const fragment = document.createDocumentFragment();
+
+    frame.className = "mini-chart-frame";
+    axis.className = "mini-y-axis";
+    plot.className = "mini-bar-plot";
+    valueArea.className = "mini-value-area";
+    valueArea.style.setProperty("--mini-bar-count", `${barCount}`);
+    valueArea.style.setProperty("--mini-bar-gap", barCount > 14 ? "7px" : barCount > 8 ? "12px" : "22px");
+    valueArea.style.setProperty("--mini-label-size", barCount > 14 ? "0.62rem" : "0.68rem");
+    container.classList.toggle("is-dense", barCount > 14);
+
+    ticks.forEach((tick, index) => {
+      const label = document.createElement("span");
+      const line = document.createElement("span");
+      const top = `${(index / (ticks.length - 1)) * 100}%`;
+
+      label.textContent = numberFormatter.format(tick);
+      line.className = "mini-grid-line";
+      line.style.top = top;
+
+      axis.append(label);
+      valueArea.append(line);
+    });
 
     rows.forEach((row) => {
       const item = document.createElement("div");
-      const label = document.createElement("span");
-      const track = document.createElement("div");
-      const bar = document.createElement("div");
+      const column = document.createElement("div");
       const value = document.createElement("span");
-      const width = Math.max((row.cantidad / maxCantidad) * 100, 1);
+      const bar = document.createElement("div");
+      const label = document.createElement("span");
+      const height = row.cantidad > 0 ? Math.max((row.cantidad / maxCantidad) * 100, 2) : 0;
 
       item.className = "mini-bar";
-      label.className = "mini-bar-label";
-      track.className = "mini-bar-track";
-      bar.className = "mini-bar-fill";
+      column.className = "mini-bar-column";
       value.className = "mini-bar-value";
+      bar.className = "mini-bar-fill";
+      label.className = "mini-bar-label";
 
-      label.textContent = row.label;
-      bar.style.width = `${width}%`;
+      item.title = `${row.label}: ${numberFormatter.format(row.cantidad)}`;
+      item.style.setProperty("--mini-bar-height", `${height}%`);
       value.textContent = numberFormatter.format(row.cantidad);
+      label.textContent = row.label;
 
-      track.append(bar);
-      item.append(label, track, value);
+      column.append(value, bar);
+      item.append(column, label);
       fragment.append(item);
     });
 
-    container.append(fragment);
+    valueArea.append(fragment);
+    plot.append(valueArea);
+    frame.append(axis, plot);
+    container.append(frame);
   }
 
   function renderCountTable(tbody, rows) {
@@ -1119,10 +1183,10 @@ if (false) {
 
     setSalesVisibility(false);
 
-    if (!selectedRange) {
+    if (!selectedRange || isDashRangeEmpty(selectedRange)) {
       view.body.classList.add("is-empty-state");
       setDashVisibility(false);
-      setNotice("empty", "No hay datos de mart_dash_cron disponibles.");
+      setNotice("empty", "No hay datos para los filtros seleccionados.");
       return;
     }
 
