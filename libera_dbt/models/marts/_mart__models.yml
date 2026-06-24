@@ -38,11 +38,6 @@ models:
           - unique
           - not_null
 
-      - name: total_ingresado
-        description: Total bruto de ingresos relacionados a la venta, sin filtrar status_ingreso.
-        tests:
-          - not_null
-
       - name: total_ingresado_bruto
         description: Alias explicito del total bruto de ingresos; incluye movimientos con status_ingreso distinto de Activo.
         tests:
