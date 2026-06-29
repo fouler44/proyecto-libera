@@ -17,7 +17,7 @@ renamed as (
         trim(upper(RAZON_SOCIAL_EMISOR)) as razon_social_emisor,
         trim(upper(RAZON_SOCIAL_RECEPTOR)) as razon_social_receptor,
         try_cast(FECHA_TIMBRADO as date) as fecha_timbrado,
-        TIPO_FACTURA as tipo_factura,
+        nullif(trim(TIPO_FACTURA), 'NULL') as tipo_factura,
         TOTAL_FACTURA as total_factura,
         trim(FOLIO_SEGUIMIENTO) as folio_seguimiento,
         trim(TIPO_PAGO) as tipo_pago

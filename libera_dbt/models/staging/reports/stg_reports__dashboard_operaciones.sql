@@ -25,15 +25,13 @@ renamed as (
         nullif(trim(upper(VENDEDOREXTERNO)), '') as vendedor_externo,
         try_cast(FECHADESTATUS as date) as fecha_de_status,
         case
-            when trim(upper(PLAN)) LIKE "CONTADO.%"
-                then "CONTADO"
-            when trim(upper(PLAN)) LIKE "48 MESES.%"
-                then "48 MESES"
-            when trim(upper(PLAN)) LIKE "24 MESES.%"
-                then "24 MESES"
-            when trim(upper(PLAN)) LIKE "60 MESES.%"
-                then "60 MESES"
-            else trim((PLAN))
+            when trim(upper(PLAN)) like '%CONTADO%' then 'CONTADO'
+            when trim(upper(PLAN)) like '48 MEESES%' then '48 MESES'
+            when trim(upper(PLAN)) LIKE "48 MESES.%" then "48 MESES"
+            when trim(upper(PLAN)) LIKE "24 MESES.%" then "24 MESES"
+            when trim(upper(PLAN)) LIKE "60 MESES.%" then "60 MESES"
+            when trim(upper(PLAN)) LIKE "12 MESES.%" then "12 MESES"
+            else trim(PLAN)
         end as plan,
         coalesce(NUMEROMENSUALIDES, 0) as numero_mensualidades,
         coalesce(NUMEROENGANCHES, 0) as numero_enganches,
@@ -49,8 +47,8 @@ renamed as (
         try_cast(FECHAPRIMERENGANCHE as date) as fecha_primer_enganche,
         try_cast(FECHAULTIMOPAGOENGANCHE as date) as fecha_ultimo_pago_enganche,
         MONTODELPRIMERENGANCHE as monto_primer_enganche,
-        nullif(trim(upper(COMISIONASESOR)), '') as comision_asesor,
-        nullif(trim(upper(COMISIONLIBERA)), '') as comision_libera
+        nullif(trim(upper(COMISIONASESOR)), 'NULL') as comision_asesor,
+        nullif(trim(upper(COMISIONLIBERA)), 'NULL') as comision_libera
 
     from source
 ),

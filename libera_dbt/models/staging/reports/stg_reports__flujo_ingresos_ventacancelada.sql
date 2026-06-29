@@ -22,10 +22,10 @@ renamed as (
         trim(upper(BANCO)) as banco,
         trim(initcap(FORMAPAGO)) as forma_pago,
         trim(CONCEPTO) as concepto,
-        trim(REFERENCIAINGRESOS) as referencia_ingresos,
+        nullif(trim(REFERENCIAINGRESOS), '') as referencia_ingresos,
         MONTOPAGADO as monto_pagado,
         trim(upper(STATUS_TERCERO)) as status_tercero,
-        trim(upper(NOMBRETERCERO)) as nombre_tercero,
+        nullif(trim(upper(NOMBRETERCERO)), '') as nombre_tercero,
         true as es_venta_cancelada
 
     from source

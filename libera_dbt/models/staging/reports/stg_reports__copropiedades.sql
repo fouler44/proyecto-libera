@@ -19,8 +19,12 @@ renamed as (
         try_cast(FECHACONTRATO as date) as fecha_contrato,
         try_cast(FECHAFIRMACONTRATO as date) as fecha_firma_contrato,
         case
-            when trim(PLAN) like '%CONTADO%' then 'CONTADO'
-            when trim(PLAN) like '48 MEESES%' then '48 MESES'
+            when trim(upper(PLAN)) like '%CONTADO%' then 'CONTADO'
+            when trim(upper(PLAN)) like '48 MEESES%' then '48 MESES'
+            when trim(upper(PLAN)) LIKE "48 MESES.%" then "48 MESES"
+            when trim(upper(PLAN)) LIKE "24 MESES.%" then "24 MESES"
+            when trim(upper(PLAN)) LIKE "60 MESES.%" then "60 MESES"
+            when trim(upper(PLAN)) LIKE "12 MESES.%" then "12 MESES"
             else trim(PLAN)
         end as plan,
         NOMENSUALIDADES as num_mensualidades,
@@ -29,7 +33,7 @@ renamed as (
         FINANCIAMIENTO as financiamiento,
         STATUSESCRITURA as status_escritura,
         try_cast(FECHAESCRITURA as date) as fecha_escritura,
-        VALORESCRITURA as valor_escritura,
+        nullif(trim(VALORESCRITURA), 'NULL') as valor_escritura,
         DIAPAGO as dia_pago,
         trim(upper(NOMBRECLIENTE)) as nombre_cliente,
         trim(upper(APELLIDOPATERNO)) as apellido_paterno,

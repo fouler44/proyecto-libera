@@ -23,10 +23,10 @@ renamed as (
         trim(upper(BANCO)) as banco,
         trim(initcap(FORMAPAGO)) as forma_pago,
         trim(CONCEPTO) as concepto,
-        trim(REFERENCIAINGRESOS) as referencia_ingresos,
+        nullif(trim(REFERENCIAINGRESOS), '') as referencia_ingresos,
         try_cast(MONTOPAGADO as decimal(10,2)) as monto_pagado,
         trim(upper(STATUS_TERCERO)) as status_tercero,
-        trim(upper(NOMBRETERCERO)) as nombre_tercero,
+        nullif(trim(upper(NOMBRETERCERO)), '') as nombre_tercero,
         try_cast(FECHA_CAPTURA as date) as fecha_captura
 
     from source
