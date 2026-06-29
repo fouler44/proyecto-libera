@@ -19,6 +19,13 @@ CI runs dbt on pull requests to `main` using Python 3.13 and Databricks secrets.
 
 Use SQL files with lowercase snake_case names. Follow dbt layer prefixes already in use: `stg_reports__...` for staging, `int_...` for intermediate models, `dim_...` for dimensions, `fct_...` for facts, `bridge_...` for bridge tables, and `mart_...` for marts. Keep CTE names descriptive and column aliases stable, especially keys such as `venta_key`, `factura_key`, and `uuid`. Prefer two-space indentation in YAML files and consistent SQL indentation within each model. Add schema tests and descriptions in the layer YAML when adding or changing model contracts.
 
+## Staging Conventions
+
+- Staging models are 1:1 with source tables
+- Named: stg_<source>__<table_name>.sql
+- Always materialized as views
+- Only staging models select from sources
+
 ## Testing Guidelines
 
 Testing uses dbt schema tests declared in YAML. At minimum, add `unique` and `not_null` tests for primary keys and required business identifiers. Add `not_null` tests for required measures used by marts. Run `dbt build --select <model>` before opening a PR, and run a full `dbt build` when changes affect shared staging, warehouse, or macro logic.
